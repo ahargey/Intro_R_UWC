@@ -7,7 +7,7 @@
 #Loading libraries 
 
 library(tidyverse)
-lam <- read.csv("data/laminaria.csv")
+lam <- read.csv("data/laminaria.csv") #saves it to environment 
 head(lam) #shows first six rows
 tail(lam) #shows last six rows
 head(lam, n = 3)
@@ -78,33 +78,26 @@ ggplot(data = lam, aes(x = stipe_mass, y = stipe_length)) +
 # 
 # 3. What was the heaviest stipe measured in each site? Return the columns `site`, `region`, and `stipe_length`.
 
-#should only have site and length
+#create a new data frame means create new file
+
+#1 - solution
+lam_exercise1 <- lam %>%
+  mutate(total_length_half = total_length / 2) %>% 
+  filter (total_length_half < 100) %>% 
+  select (site, total_length_half) #these are existing columns
+
 #2.
 
-lam_exercise2 <- lam %>%
+lam %>%
   group_by(site) %>% 
-  summarise(mean_bl = mean(blade_length),
-            min_bl = min(blade_length),
+  summarise(mean_bl = mean(blade_length), #did not need to pipe
+            min_bl = min(blade_length), #because same function
             max_bl = max(blade_length),
-            n = n())
+            n = n()) #the first n is the name of the column
 
-#3.
-lam_exercise3.1 <- lam %>% 
-  group_by(site, region, stipe_length) %>%
-  summarise(heaviest_stipe = max(stipe_mass)) %>%
-  na.omit
-
-
-#1 data frame from the `laminaria` that contains site` column and 
-#a new column called `total_length_half` 
-#containing values that are half of the `total_length`. 
-#In this `total_length_half` column, there are no `NA`s and all values are less than 100.
-
-lam_exercise1 <- lam %>%
-  group_by(site, total_length)a
-  # half two
-
-  
-  
-
-  
+#3. 
+lam %>% 
+  group_by(site) %>% 
+  filter(stipe_mass == max(stipe_mass)) %>% #maximum stipe mass
+  select(site, region, stipe_length) #taking the maximum from
+                                    # prev data
