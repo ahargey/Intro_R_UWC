@@ -6,7 +6,7 @@
 
 #Homework: convert CSV to .Rdata. Write one line of code to do this.
 #First load your CSV into R and then convert.
-#Write a 5 line paragraph discusing the library ggsn and library scales. Description.  
+#Write a 5 line paragraph discussing the library ggsn and library scales. Description.  
 #Practice how to read code
 
 # Load libraries
