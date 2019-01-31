@@ -38,3 +38,18 @@ sa_2 <- sa_1 +
            angle = 330,
            colour = "limegreen")
 sa_2
+
+sa_3 <- sa_2 + #the second SOUTH AFRICA map
+  scalebar(x.min = 32, x.max = 26, y.min = -34, y.max = -35, # Set location of bar
+           dist = 200, height = 1, st.dist = 0.8, st.size = 4, # Set particulars
+           dd2km = TRUE, model = "WGS84") + # Set appearance #code doesn't change
+  north(x.min = 28.5, x.max = 25.5, y.min = -33, y.max = -31, # Set location of symbol
+        scale = 1.2, symbol = 16) #you shift these by adjusting the x.min and y.min values
+sa_3
+
+sa_4 <- sa_3 +
+  annotation_custom(grob = ggplotGrob(africa_map), #this is the inset map feature
+                    xmin = 20.9, xmax = 26.9,
+                    ymin = -30, ymax = -24)
+sa_4
+
