@@ -37,7 +37,7 @@ ggplot(chicks, aes(x = Time, y = weight, colour = Diet)) +
 lam <- read.csv("data/laminaria.csv")
 
 ggplot(lam, aes(x = blade_length, y = total_length, colour = site)) +
-  geom_point(colour = "maroon") +
+  geom_point(colour = "maroon")aes(weight)  +
   geom_smooth(method = "lm") +
   labs(x = "Blade Length (m)", y = "Total Length (m)") +
   ggtitle("Length of Seaweed") +
@@ -106,3 +106,5 @@ ggplot(data = urine, aes(x = osmo, y = ph)) +
 
 ggplot(data = urine, aes(x = osmo, y = ph)) +
   geom_point(aes(colour = as.factor(r)))
+
+#set is cars
