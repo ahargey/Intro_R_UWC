@@ -17,7 +17,7 @@ library(ggsn)
 # Load Africa map
 load("data/africa_map.RData")
 
-ggplot() +
+ggplot() + #world map
   borders() + # The global shape file
   coord_equal() # Equal sizing for lon/lat 
 

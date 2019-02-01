@@ -81,6 +81,8 @@ plot_4 #will project the plot after creation
 #plot combined
 plot_combined <- ggarrange(plot_1, plot_2, plot_3, plot_4)
 plot_combined
+#makes one big plot composed of other graphs
+
 
 #HOMEWORK:
 #Any three datasets
@@ -106,5 +108,3 @@ ggplot(data = urine, aes(x = osmo, y = ph)) +
 
 ggplot(data = urine, aes(x = osmo, y = ph)) +
   geom_point(aes(colour = as.factor(r)))
-
-#set is cars
