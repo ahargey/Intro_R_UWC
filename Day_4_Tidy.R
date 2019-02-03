@@ -43,3 +43,7 @@ SACTN4b_tidy <- SACTN4b %>%
 
 #JOINING
 SACTN4_tidy <- left_join(SACTN4a_tidy, SACTN4b_tidy)
+
+# [A.A]
+# Good commenting
+# Shows clear understanding of the code

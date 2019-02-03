@@ -186,3 +186,10 @@ graph_8_lam_olifantsbos2 #displays the plot
 
 graph_8_compiled <- ggarrange(graph_8_lam_olifantsbos, graph_8_lam_olifantsbos2)
 graph_8_compiled #final graph showing the relationship of the seaweed blade and stipe length against total length
+
+
+#[A.A]
+# Great, nice work. 
+#Tried new things, sufficient code and comments, neatly written
+# Different graphs could be used to better compare the hypothesis but this will be taught in biostats
+# NIcely done

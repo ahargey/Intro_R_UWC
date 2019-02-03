@@ -108,3 +108,8 @@ ggplot(data = urine, aes(x = osmo, y = ph)) +
 
 ggplot(data = urine, aes(x = osmo, y = ph)) +
   geom_point(aes(colour = as.factor(r)))
+
+# [A.A]
+# Neat script
+# A bit more comments will only make studying easier in future
+# Good work

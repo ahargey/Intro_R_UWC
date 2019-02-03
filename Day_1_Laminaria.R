@@ -101,3 +101,9 @@ lam %>%
   filter(stipe_mass == max(stipe_mass)) %>% #maximum stipe mass
   select(site, region, stipe_length) #taking the maximum from
                                     # prev data
+
+# [A.A]
+# Sjoh! NIce, neat scrript
+# Code runs
+# SUfficent notes throughout the script
+# Shows a clear understanding 

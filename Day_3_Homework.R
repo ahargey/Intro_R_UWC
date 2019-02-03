@@ -27,4 +27,8 @@ library(scales)
 #It provides a way to automatically determine breaks and labels for axes and legends.
 #Both these libraries are used to make maps.
 
+# [A.A]
+# nICE
+# With furthur reading in PDF documents one would have a better understanding on this
+
 

@@ -47,3 +47,8 @@ SACTN %>%
   summarise(mean_temp = mean(temp, na.rm = TRUE),
             sd_temp = sd(temp, na.rm = TRUE))
 
+# [A.A]
+# Shows clear understanding of the code, good discriptions
+# Neat script
+# Trying new things and playing with the different functions and editing by adding new things will only improve you code and marks
+# Nice work
