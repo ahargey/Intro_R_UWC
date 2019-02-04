@@ -50,6 +50,6 @@ eck_bar <-
   geom_bar()
 
 
-(aes(x = digits, colour = stipe_length))
+(aes(x = digits, colour = stipe_length)) 
 
            
