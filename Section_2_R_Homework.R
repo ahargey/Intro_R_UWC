@@ -43,51 +43,88 @@ dim(eck)
 #26 rows and 12 columns
 
 #BAR GRAPH
-#HYPOTHESIS: there are more digits in boulders beach than batsata beach
-eck_bar <- 
-  
-  ggplot2.barplot(data=, xName="site", yName="digits")
-  
-  ggplot(eck, aes(x = site, y = digits)) +
-  geom_bar(stat = "identity")
-  
-  , aes(fill = site), width = 3, position = "dodge")
-
-
-  ggplot(eck, aes(x = stipe_length, y = frond_length)) +
-    geom_col(aes(fill = site)) +
-    geom_bar(stat = "identity", aes(fill = site), width = 3, position = "dodge") +
-    labs(x = "Stipe Length (mm)", y = "Frond Length (mm)") +
-    ggtitle("The relationship between stipe length and frond length") +
-    theme_bw() + 
-    theme(axis.text.x = element_text(angle = 40, hjust = 1, colour = "black", size=12),
+#HYPOTHESIS: Frond length differs from stipe length dependent on site 
+eck_bar <- ggplot(eck, aes(x = stipe_length, y = frond_length)) +
+  geom_bar(stat = "identity", aes(fill = site), width = 3, position = "dodge") +
+  facet_wrap(~site, ncol=2) +
+  labs(x = "Stipe Length (mm)", y = "Frond Length (mm)") +
+  ggtitle("The relationship between stipe length and frond length") +
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 40, hjust = 1, colour = "black", size=12),
           axis.text.y = element_text(hjust = 1, colour = "black", size=12),
           plot.title = element_text(size=16, face="bold", hjust=0.5))
   
   
+#CONCLUSION: The site Batsata Rock has much longer fronds and stipe lengths than seen at Boulders Beach.
+#This could be due to a number of factors such as the amount of pollution and nutrients in the water.
   
-  
-  
-    ggplot(eck, aes(x = stipe_length, y = frond_length)) +
-    geom_bar(stat = "identity", aes(fill = site), width = 3) +
-    labs(x = "Stipe Length (mm)", y = "Frond Length (mm)") +
-    ggtitle("The relationship between stipe length and frond length") +
-    
-      
-      
-      
-      
-      
-      
-      theme_bw() + 
-    theme(axis.text.x = element_text(angle = 40, hjust = 1, colour = "black", size=12),
-          axis.text.y = element_text(hjust = 1, colour = "black", size=12),
-          plot.title = element_text(size=16, face="bold", hjust=0.5))
-    
-    theme_bw
-  
-  
-  
-(aes(x = digits, colour = stipe_length)) 
+#HYPOTHESIS: The epiphyte length of a species of Ecklonia is strongly related to the stipe length mostly, and this varies by site
+eck_line <- ggplot(eck, aes(x = stipe_length, y = epiphyte_length, colour = site)) +
+  geom_point() +
+  scale_colour_manual(values = c("red4", "royalblue4")) + # How to use custom palette
+  labs(colour = "Site of Sample") +
+  geom_smooth(method = "lm") +
+  facet_wrap(~site, ncol=2) + #faceted so it is easier to view the differences between sites
+  labs(x = "Stipe Length (mm)", y = "Epiphyte Length (mm)") + #labels
+  ggtitle("Relationship between stipe length and epiphyte length between sites") + #title
+  theme_bw () +
+  theme(axis.text.x = element_text(angle = 40, hjust = 1, colour = "black", size=12),
+        axis.text.y = element_text(hjust = 1, colour = "black", size=12),
+        plot.title = element_text(size=16, face="bold", hjust=0.5))
+eck_line
+#CONCLUSION: While the species of Ecklonia found in Boulders Beach show a sharper relationship between the height of an epiphyte in relation to the stipe
+#It can be seen that Batsata Rock Ecklonia is bigger on average.
+#This may be due to the environmental conditions present.
 
-           
+  
+#BOXPLOT    
+#HYPOTHESIS: Ecklonia found in the Batsata Rock site is heavier than found in Boulders Beach 
+
+eck_box <- ggplot(eck, aes(x = frond_mass, y = stipe_mass)) +
+  geom_boxplot(aes(fill = site)) +
+  facet_wrap(~site, ncol=2) +
+  labs(x = "Frond Mass (g)", y = "Stipe Mass (g)") +
+  ggtitle("Relationship between stipe mass and frond mass between sites") + #title
+  theme_bw () +
+  theme(axis.text.x = element_text(angle = 40, hjust = 1, colour = "black", size=12),
+        axis.text.y = element_text(hjust = 1, colour = "black", size=12),
+        plot.title = element_text(size=16, face="bold", hjust=0.5))
+eck_box #will project the plot after creation     
+
+#CONCLUSION: While there is some overlap between the two sites, on average Batsata Rock has heavier species of Ecklonia
+
+eck %>%
+  group_by(site) %>% 
+  summarise(mean_sl = mean(stipe_length), #did not need to pipe
+            min_sl = min(stipe_length), #because same function
+            max_sl = max(stipe_length),
+            median_sl = median(stipe_length),
+            var_sl = var(stipe_length))
+
+eck %>%
+  group_by(site) %>% 
+  summarise(mean_dm = mean(stipe_diameter), #did not need to pipe
+            min_dm = min(stipe_diameter), #because same function
+            max_dm = max(stipe_diameter),
+            median_dm = median(stipe_diameter),
+            var_dm = var(stipe_diameter))
+
+eck %>% #standard error of stipe length
+  group_by(site) %>%
+  summarise(var_sl = var(stipe_length),
+  n = n()) %>%
+  mutate(se = sqrt(var_sl/n)) #creates a new column
+
+eck %>% #standard error of stipe diameter
+  group_by(site) %>%
+  summarise(var_sl = var(stipe_diameter),
+            n = n()) %>%
+  mutate(se = sqrt(var_sl/n))
+
+eck %>%
+  summarise(min_fl = min(frond_length),
+            max_fl = max(frond_length),
+            min_sl = min(stipe_length),
+            max_sl = max(stipe_length))
+
+summary(eck)
