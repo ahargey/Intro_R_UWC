@@ -46,10 +46,48 @@ dim(eck)
 #HYPOTHESIS: there are more digits in boulders beach than batsata beach
 eck_bar <- 
   
-  ggplot(eck, aes(x = site)) +
-  geom_bar()
+  ggplot2.barplot(data=, xName="site", yName="digits")
+  
+  ggplot(eck, aes(x = site, y = digits)) +
+  geom_bar(stat = "identity")
+  
+  , aes(fill = site), width = 3, position = "dodge")
 
 
+  ggplot(eck, aes(x = stipe_length, y = frond_length)) +
+    geom_col(aes(fill = site)) +
+    geom_bar(stat = "identity", aes(fill = site), width = 3, position = "dodge") +
+    labs(x = "Stipe Length (mm)", y = "Frond Length (mm)") +
+    ggtitle("The relationship between stipe length and frond length") +
+    theme_bw() + 
+    theme(axis.text.x = element_text(angle = 40, hjust = 1, colour = "black", size=12),
+          axis.text.y = element_text(hjust = 1, colour = "black", size=12),
+          plot.title = element_text(size=16, face="bold", hjust=0.5))
+  
+  
+  
+  
+  
+    ggplot(eck, aes(x = stipe_length, y = frond_length)) +
+    geom_bar(stat = "identity", aes(fill = site), width = 3) +
+    labs(x = "Stipe Length (mm)", y = "Frond Length (mm)") +
+    ggtitle("The relationship between stipe length and frond length") +
+    
+      
+      
+      
+      
+      
+      
+      theme_bw() + 
+    theme(axis.text.x = element_text(angle = 40, hjust = 1, colour = "black", size=12),
+          axis.text.y = element_text(hjust = 1, colour = "black", size=12),
+          plot.title = element_text(size=16, face="bold", hjust=0.5))
+    
+    theme_bw
+  
+  
+  
 (aes(x = digits, colour = stipe_length)) 
 
            
