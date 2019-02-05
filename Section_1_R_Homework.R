@@ -95,7 +95,7 @@ feb_map_scale <- feb_map_labelled +
   scalebar(x.min = 33, x.max = 35, y.min = -34.5, y.max = -33.5, #Sets the location of scale bar
            dist = 200, height = 0.2, st.dist = 0.2, st.size = 3.5, #Sets particulars
            dd2km = TRUE, model = "WGS84") + #Sets appearance #code doesn't change
-  north(x.min = 15.5, x.max = 16.5, y.min = -28, y.max = -27, # Set location of symbol
+  north(x.min = 15.5, x.max = 16.5, y.min = -28, y.max = -27, #Sets location of north symbol
         scale = 1, symbol = 3) #you shift these by adjusting the x.min and y.min values
 feb_map_scale
 
@@ -133,12 +133,12 @@ aug_map_process <-  ggplot(data = aug, aes(x = lon, y = lat)) +
         axis.title.y = element_text(face = "bold", size = 12),
         plot.background = element_rect(fill = "#E2C0A5"),
         plot.title = element_text(hjust = 0.5),
-        legend.text = element_text(size = 10), # Change text size in legend
-        legend.title = element_text(size = 10), # Change legend title text size
-        legend.key.height = unit(0.5, "cm"), # Change size of legend
-        legend.background = element_rect(colour = "white"), # Add legend background
-        legend.justification = c(1, 0.3), # Change position of legend
-        legend.position = c(1, 0.38))
+        legend.text = element_text(size = 10), 
+        legend.title = element_text(size = 10), 
+        legend.key.height = unit(0.5, "cm"),
+        legend.background = element_rect(colour = "white"), 
+        legend.justification = c(1, 0.3), 
+        legend.position = c(1, 0.38)) #theme edits similar as above
 aug_map_process
 
 #LABELS
@@ -159,11 +159,11 @@ aug_map_labelled
 
 #NORTH ARROW AND SCALE
 aug_map_scale <- aug_map_labelled +
-  scalebar(x.min = 33, x.max = 35, y.min = -34.5, y.max = -33.5, # Set location of bar
-           dist = 200, height = 0.2, st.dist = 0.2, st.size = 3.5, # Set particulars
-           dd2km = TRUE, model = "WGS84") + # Set appearance #code doesn't change
-  north(x.min = 15.5, x.max = 16.5, y.min = -28, y.max = -27, # Set location of symbol
-        scale = 1, symbol = 3) #you shift these by adjusting the x.min and y.min values
+  scalebar(x.min = 33, x.max = 35, y.min = -34.5, y.max = -33.5, 
+           dist = 200, height = 0.2, st.dist = 0.2, st.size = 3.5, 
+           dd2km = TRUE, model = "WGS84") + 
+  north(x.min = 15.5, x.max = 16.5, y.min = -28, y.max = -27, 
+        scale = 1, symbol = 3) 
 aug_map_scale
 
 #INSETTING
