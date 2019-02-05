@@ -59,8 +59,8 @@ ggplot(SACTN1, aes(x = date, y = temp)) +
 #GATHER
 SACTN2_tidy <- SACTN2 %>% 
   gather(DEA, KZNSB, SAWS, key = "src", value = "temp")
-#first bit is the columns you want to gather
-#key is the new column to explain the numbers (key as in legend)
+#the first part is the columns you want to gather
+#key is the new column to explain the numbers
 #value is where the numbers are going
 
 #SPREADING
@@ -175,7 +175,7 @@ SACTN <- SACTNmonthly_v4.0
 #Remove original
 rm(SACTNmonthly_v4.0)
 
-SACTN_depth_mean <- SACTN_depth %>%
+SACTN_depth_mean <- SACTN %>%
   group_by(depth) %>% 
   summarise(mean_temp = mean(temp, na.rm = TRUE), #assign name to column
             count = n())
@@ -257,7 +257,7 @@ SACTN %>%
   ggplot(aes(x = month, y = mean_temp)) + #the beginning of the ggplot, switching from %>% pipe to +
   geom_ribbon(aes(ymin = mean_temp - sd_temp, ymax = mean_temp + sd_temp),
               fill = "black", alpha = 0.4) + #Creates a ribbon
-  geom_line(col = "red", size = 0.3) + # Create lines within ribbon
+  geom_line(col = "red", size = 0.3) + #Create lines within ribbon
   facet_wrap(~index) + #Facet by sites
   scale_x_continuous(breaks = seq(2, 12, 4)) + #X axis ticks
   labs(x = "Month", y = "Temperature (°C)") + #Labels
