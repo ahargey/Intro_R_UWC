@@ -40,3 +40,14 @@ ggplot(data = SACTN_mean_1, aes(x = year, y = mean_temp)) +
   scale_y_continuous(breaks = c(20, 22, 24)) +
   ggtitle("KZNSB: series of annual means")
   
+lam <- read_csv("data/laminaria.csv")
+
+#FILTER FOR FALSEBAY ONLY
+lam_fb <- lam %>% 
+  filter(region == "FB")
+
+ggplot(data = lam_fb, aes(x = blade_length, y = blade_weight)) +
+  geom_line(aes (colour = site)) +
+  geom_point(aes (colour = site)) +
+  facet_wrap(~site, ncol = 3) 
+
