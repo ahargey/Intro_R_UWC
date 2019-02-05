@@ -33,27 +33,10 @@ SACTN_mean_1 <- SACTN %>%
   summarise(mean_temp = mean(temp, na.rm = TRUE))
 
 ggplot(data = SACTN_mean_1, aes(x = year, y = mean_temp)) +
-  geom_line(aes(group = site)) +
-  facet_wrap(~site, ncol = 5) +
+  geom_line(aes(group = site), colour = "seagreen1") +
+  facet_wrap(~site,ncol = 5) +
   labs(x = "Year", y = "Temperature (C°)") +
   scale_x_discrete(breaks = c("1980", "2000")) +
-  scale_y_continuous(breaks = c("20", "22", "24"))
-
-
-
-SACTN_mean <- SACTN %>%
-  mutate(date = ymd(str_remove(date, "X")))
-
-
-  gather(date, temp, -site, -src, -depth, -type) %>%
-  mutate(date = ymd(str_remove(date, "X"))) %>%
-  mutate(year = year(date)) %>%
-  group_by(site, temp, year) %>%
-  summarise_at(vars(temp), mean, na.rm = TRUE) %>%
-  spread(year, temp)
-lubridate
-
-df %>%
-  mutate(date = floor_date(date)) %>%
-  group_by(date) %>%
-  summarize(mean_X1 = mean(X1))
+  scale_y_continuous(breaks = c(20, 22, 24)) +
+  ggtitle("KZNSB: series of annual means")
+  
