@@ -53,6 +53,7 @@ eck_bar <- ggplot(eck, aes(x = stipe_length, y = frond_length)) +
   theme(axis.text.x = element_text(angle = 40, hjust = 1, colour = "black", size=12),
           axis.text.y = element_text(hjust = 1, colour = "black", size=12),
           plot.title = element_text(size=16, face="bold", hjust=0.5))
+eck_bar
   
   
 #CONCLUSION: The site Batsata Rock has much longer fronds and stipe lengths than seen at Boulders Beach.
@@ -92,6 +93,13 @@ eck_box <- ggplot(eck, aes(x = frond_mass, y = stipe_mass)) +
 eck_box #will project the plot after creation     
 
 #CONCLUSION: While there is some overlap between the two sites, on average Batsata Rock has heavier species of Ecklonia
+
+final_plot <- ggarrange(eck_bar, eck_line, eck_box) +
+  ggtitle("Three Graphs Displaying the Ecklonia Dataset") + #title
+  theme(plot.title = element_text(size=18, colour = "slategray", face="bold", hjust=0.5))
+  
+
+final_plot
 
 eck %>%
   group_by(site) %>% 
