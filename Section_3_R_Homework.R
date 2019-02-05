@@ -188,3 +188,150 @@ ggplot(data = SACTN_depth_mean, mapping = aes(x = depth, y = mean_temp)) +
   ggtitle("Temperature and Depth") +
   labs(x = "Depth (m)", y = "Temperature (C)") +
   theme_bw()
+
+#GROUPING DATAFRAMES
+SACTN_temp_group <- SACTN %>%
+  group_by(round(temp), depth) #grouped by depth and rounded off temperature
+
+SACTN_src_group <- SACTN %>%
+  group_by(src, date) #grouped by source and date
+
+SACTN_date_group <- SACTN %>%
+  group_by(date, depth) #grouped by date and depth
+
+SACTN_ungroup <- SACTN_date_group %>%
+  ungroup() #ungrouping
+
+#CHAIN FUNCTION
+SACTN_depth_mean_2 <- SACTN %>% 
+  group_by(depth) %>% #Grouped by depth
+  summarise(mean_temp = mean(temp, na.rm = TRUE), #Calculate mean
+            count = n()) 
+
+SACTN_30_years <- SACTN %>%
+  group_by(site, src) %>% #these will be grouped together
+  filter(n() > 360) #360 months = 30 years
+
+SACTN_anom <- SACTN %>% #anomaly for each site
+  group_by(site, src) %>%
+  mutate(anom = temp - mean(temp, na.rm = T)) %>%
+  select(site:date, anom, depth, type) %>%
+  ungroup()
+
+#VECTOR - PRACTICE THIS
+selected_sites <- c("Paternoster", "Oudekraal") #making a vector
+#creating a set of sites
+#this is contrasted to this which is one site:
+SACTN %>% 
+  filter(site == "Port Nolloth") 
+
+SACTN %>%
+  filter(site %in% selected_sites) %>% #the site column in those selected sites
+  group_by(site, src) %>%
+  summarise(mean_temp = mean(temp, na.rm = TRUE),
+            sd_temp = sd(temp, na.rm = TRUE))
+
+selected_sites <- c("Paternoster", "Oudekraal", "Muizenberg", "Humewood") #making a vector
+
+SACTN %>%
+  filter(site %in% selected_sites) %>% #the site column in those selected sites
+  group_by(site, src) %>%
+  summarise(mean_temp = mean(temp, na.rm = TRUE),
+            sd_temp = sd(temp, na.rm = TRUE))
+
+SACTN %>%
+  filter(site == "Port Nolloth", temp > 10, temp < 15)
+
+SACTN %>%
+  filter(site == "Port Nolloth", !(temp <= 10 | temp >= 15))
+
+#MAKING INTO A PLOT
+SACTN %>% 
+  filter(site %in% c("Bordjies", "Tsitsikamma", "Humewood", "Durban")) %>%
+  select(-depth, -type) %>% #Remove these two columns
+  mutate(month = month(date), #Creates a column called month
+         index = paste(site, src, sep = "/ ")) %>% #Separates the index column
+  group_by(index, month) %>% #Group by individual sites and months
+  summarise(mean_temp = mean(temp, na.rm = TRUE), #mean temperature
+            sd_temp = sd(temp, na.rm = TRUE)) %>% #standard deviation
+  ggplot(aes(x = month, y = mean_temp)) + #the beginning of the ggplot, switching from %>% pipe to +
+  geom_ribbon(aes(ymin = mean_temp - sd_temp, ymax = mean_temp + sd_temp),
+              fill = "black", alpha = 0.4) + #Creates a ribbon
+  geom_line(col = "red", size = 0.3) + # Create lines within ribbon
+  facet_wrap(~index) + #Facet by sites
+  scale_x_continuous(breaks = seq(2, 12, 4)) + #X axis ticks
+  labs(x = "Month", y = "Temperature (°C)") + #Labels
+  theme_dark() #Theme
+
+SACTN %>% #renaming
+  rename(source = src)
+
+#TRANSMUTE
+SACTN_transmute <- SACTN %>%
+  transmute(kelvin = temp + 273.15) 
+#creates a new variable column but doesn't want to keep the original
+
+SACTN %>%
+  group_by(site, src) %>%
+  transmute(kelvin = temp + 273.15)
+
+SACTN_n <- SACTN %>%
+  group_by(site, src) %>%
+  summarise(mean_temp = round(mean(temp, na.rm = T))) %>%
+  ungroup() %>%
+  select(mean_temp) %>%
+  group_by(mean_temp) %>%
+  summarise(count = n())
+ggplot(data = SACTN_n, aes(x = 1:nrow(SACTN_n), y = mean_temp)) +
+  geom_point(aes(size = count)) +
+  labs(x = "", y = "Temperature (°C)") +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())
+
+SACTN %>%
+  group_by(site, src) %>%
+  summarise(mean_temp = round(mean(temp, na.rm = T))) %>%
+  ungroup() %>%
+  ggplot(aes(x = mean_temp)) +
+  geom_density(fill = "midnightblue", alpha = 0.6) +
+  labs(x = "Temperature (°C)")
+
+#SLICE 
+SACTN %>%
+  slice(10010:10020) #slices a sequence
+
+SACTN %>%
+  slice(c(1,8,19,24,3,400)) #slices specific rows
+
+SACTN %>%
+  slice(-(c(1,8,4))) #slices everything except these
+
+SACTN %>%
+  slice(-(1:1000)) #slices all rows except this sequence
+
+SACTN %>%
+  group_by(site, src) %>%
+  summarise(sd_temp = sd(temp, na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(desc(sd_temp)) %>%
+  slice(1:5) #top 5 variable sites, measured by SD
+
+SACTN %>%
+  na.omit() %>% #removes n/a data
+  group_by(src) %>%
+  summarise(count = n(),
+            count_15 = sum(temp > 15)) %>%
+  mutate(prop_15 = count_15/count) %>%
+  arrange(prop_15) #summarises data
+
+read_csv("data/SACTN_data.csv") %>% #Loads the SACTN Day 1 data from a CSV
+  mutate(month = month(date)) %>% #Creates a month abbreviation column
+  group_by(site, month) %>% #Group by sites and months
+  summarise(mean_temp = mean(temp, na.rm = TRUE), #Calculates mean
+            sd_temp = sd(temp, na.rm = TRUE)) %>% #Calculates SD
+  ggplot(aes(x = month, y = mean_temp)) + #Begins ggplot and switches from %>% to +
+  geom_ribbon(aes(ymin = mean_temp - sd_temp, ymax = mean_temp + sd_temp),
+              fill = "black", alpha = 0.5) + #Creates a ribbon
+  geom_point(aes(colour = site)) + #Creates dots
+  geom_line(aes(colour = site, group = site)) + #Create lines
+  labs(x = "", y = "Temperature (°C)", colour = "Site") #Labels
