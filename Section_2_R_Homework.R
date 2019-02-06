@@ -13,12 +13,6 @@
 # All graphs must have labels as well as titles !and themes!
 # Calculate the mean,max,min,median and variance for the stipe_length, stipe_diameter for each of the sites (Hint* group_by site)
 # Calculate standard error !se!
-# #eck %>% #standard error
-# group_by(site) %>%
-#   summarise(var_bl = var(blade_length),
-#             n = n()) %>%
-#   mutate(se = sqrt(var_bl/n)) #creates a new column
-
 # Determine the min and maximum frond length and stipe length
 # Determine the overall summary of the dataset !summary(wholedatasetname)
 
