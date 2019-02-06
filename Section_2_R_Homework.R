@@ -2,7 +2,7 @@
 #R Homework
 #AYESHA HARGEY
 #3650393
-#3rd eckruary 2019
+#5th February 2019
 
 # Section 2: 
 # Make use of the ecklonia.csv dataset:
@@ -40,13 +40,13 @@ dim(eck)
 #HYPOTHESIS: Frond length differs from stipe length dependent on site 
 eck_bar <- ggplot(eck, aes(x = stipe_length, y = frond_length)) +
   geom_bar(stat = "identity", aes(fill = site), width = 3, position = "dodge") +
-  facet_wrap(~site, ncol=2) +
+  facet_wrap(~site, ncol=2) + #2 columns when faceted
   labs(x = "Stipe Length (mm)", y = "Frond Length (mm)") +
   ggtitle("The relationship between stipe length and frond length") +
   theme_bw() + 
   theme(axis.text.x = element_text(angle = 40, hjust = 1, colour = "black", size=12),
           axis.text.y = element_text(hjust = 1, colour = "black", size=12),
-          plot.title = element_text(size=16, face="bold", hjust=0.5))
+          plot.title = element_text(size=14, face="bold", hjust=0.5))
 eck_bar
   
   
@@ -59,13 +59,12 @@ eck_line <- ggplot(eck, aes(x = stipe_length, y = epiphyte_length, colour = site
   scale_colour_manual(values = c("red4", "royalblue4")) + # How to use custom palette
   labs(colour = "Site of Sample") +
   geom_smooth(method = "lm") +
-  facet_wrap(~site, ncol=2) + #faceted so it is easier to view the differences between sites
   labs(x = "Stipe Length (mm)", y = "Epiphyte Length (mm)") + #labels
   ggtitle("Relationship between stipe length and epiphyte length between sites") + #title
   theme_bw () +
   theme(axis.text.x = element_text(angle = 40, hjust = 1, colour = "black", size=12),
         axis.text.y = element_text(hjust = 1, colour = "black", size=12),
-        plot.title = element_text(size=16, face="bold", hjust=0.5))
+        plot.title = element_text(size=14, face="bold", hjust=0.5))
 eck_line
 #CONCLUSION: While the species of Ecklonia found in Boulders Beach show a sharper relationship between the height of an epiphyte in relation to the stipe
 #It can be seen that Batsata Rock Ecklonia is bigger on average.
@@ -77,13 +76,12 @@ eck_line
 
 eck_box <- ggplot(eck, aes(x = frond_mass, y = stipe_mass)) +
   geom_boxplot(aes(fill = site)) +
-  facet_wrap(~site, ncol=2) +
   labs(x = "Frond Mass (g)", y = "Stipe Mass (g)") +
   ggtitle("Relationship between stipe mass and frond mass between sites") + #title
   theme_bw () +
   theme(axis.text.x = element_text(angle = 40, hjust = 1, colour = "black", size=12),
         axis.text.y = element_text(hjust = 1, colour = "black", size=12),
-        plot.title = element_text(size=16, face="bold", hjust=0.5))
+        plot.title = element_text(size=14, face="bold", hjust=0.5))
 eck_box #will project the plot after creation     
 
 #CONCLUSION: While there is some overlap between the two sites, on average Batsata Rock has heavier species of Ecklonia
@@ -97,22 +95,22 @@ final_plot
 
 eck %>%
   group_by(site) %>% 
-  summarise(mean_sl = mean(stipe_length), #did not need to pipe
-            min_sl = min(stipe_length), #because same function
-            max_sl = max(stipe_length),
-            median_sl = median(stipe_length),
-            var_sl = var(stipe_length))
+  summarise(mean_sl = mean(stipe_length), #did not need to pipe because same function
+            min_sl = min(stipe_length), #minimum
+            max_sl = max(stipe_length), #maximum
+            median_sl = median(stipe_length), #median
+            var_sl = var(stipe_length)) #variance
 
 eck %>%
   group_by(site) %>% 
-  summarise(mean_dm = mean(stipe_diameter), #did not need to pipe
-            min_dm = min(stipe_diameter), #because same function
-            max_dm = max(stipe_diameter),
-            median_dm = median(stipe_diameter),
-            var_dm = var(stipe_diameter))
+  summarise(mean_dm = mean(stipe_diameter), #did not need to pipe because same function
+            min_dm = min(stipe_diameter), #minimum
+            max_dm = max(stipe_diameter), #maximum
+            median_dm = median(stipe_diameter), #median
+            var_dm = var(stipe_diameter)) #variance
 
 eck %>% #standard error of stipe length
-  group_by(site) %>%
+  group_by(site) %>% 
   summarise(var_sl = var(stipe_length),
   n = n()) %>%
   mutate(se = sqrt(var_sl/n)) #creates a new column
@@ -121,7 +119,7 @@ eck %>% #standard error of stipe diameter
   group_by(site) %>%
   summarise(var_sl = var(stipe_diameter),
             n = n()) %>%
-  mutate(se = sqrt(var_sl/n))
+  mutate(se = sqrt(var_sl/n)) #creates a new column
 
 eck %>%
   summarise(min_fl = min(frond_length),

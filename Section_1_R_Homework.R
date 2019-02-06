@@ -1,4 +1,4 @@
-#SECTION 1
+#SECTION 1 
 #R Homework
 #AYESHA HARGEY
 #3650393
@@ -55,14 +55,14 @@ palette <- c("#81A5D1","#9B9DCF","#B294C7","#C68BBB",
 load("data/sa_provinces.RData")
 
 feb_map_process <-  ggplot(data = feb, aes(x = lon, y = lat)) +
-  geom_raster(aes(x = lon, y = lat, fill = bins)) +
+  geom_raster(aes(x = lon, y = lat, fill = bins)) + #the data from the maps
   geom_tile(data = feb, aes(x = lon, y = lat, fill = bins), width = 1.5) +
-  geom_polygon(colour = "black", fill = "grey60") +
-  scale_fill_manual("Temperature (°C)", values = palette) +
-  geom_path(data = sa_provinces, aes(group = group)) +
-  labs(x = "Longitude", y = "Latitude") +
-  ggtitle("Coastal Temperatures for the month of February") +
-  theme(axis.title.x = element_text(face = "bold", size = 12),
+  geom_polygon(colour = "black", fill = "grey60") + #the fill in of the country
+  scale_fill_manual("Temperature (°C)", values = palette) + #the palette
+  geom_path(data = sa_provinces, aes(group = group)) + #the provincial boundaries 
+  labs(x = "Longitude", y = "Latitude") + #labels
+  ggtitle("Coastal Temperatures for the month of February") + #title
+  theme(axis.title.x = element_text(face = "bold", size = 12), #customized theme
         axis.title.y = element_text(face = "bold", size = 12),
         plot.background = element_rect(fill = "#d4ccc7"),
         plot.title = element_text(hjust = 0.5),
@@ -99,7 +99,8 @@ feb_map_scale <- feb_map_labelled +
         scale = 1, symbol = 3) #you shift these by adjusting the x.min and y.min values
 feb_map_scale
 
-#INSETTING
+#INSETTING 
+#Adding a smaller map into the main one
 load("data/africa_map.RData")
 feb_map_final <- feb_map_scale +
   annotation_custom(grob = ggplotGrob(africa_map),
