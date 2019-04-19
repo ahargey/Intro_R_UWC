@@ -76,6 +76,7 @@ range(chicks$weight) #has min and max combined
 min(chicks$weight) #just min
 max(chicks$weight) #just max
 
+#in class exercise
 #all chickens younger than 10 days earlier (every day less than ten)
 #each of the 4 different diets
 #produce a summary
@@ -194,15 +195,15 @@ ggarrange(hist1, hist2, hist3, hist4, ncol = 2, nrow = 2, labels = "AUTO")
 
 #CONTINUOUS DATA WITH IRIS
 
-# first we make long data
+#data is converted into a form that is 'long' (tidy)
 iris.long <- iris %>% 
   gather(key = "variable", value = "size", -Species)
 
 ggplot(data = iris.long, aes(x = size)) +
-  geom_histogram(position = "dodge", # ommitting this creates a stacked histogram
+  geom_histogram(position = "dodge", #individual columns
                  colour = NA, bins = 20,
                  aes(fill = Species)) +
-  facet_wrap(~variable) +
+  facet_wrap(~variable) + #separates 
   labs(title = "Iris data",
        subtitle = "Grouped frequency histogram",
        x = "Size (mm)",
@@ -244,4 +245,4 @@ scatterplt2 <- ggplot(data = iris, aes(x = Petal.Length, y = Petal.Width, colour
   theme_pubclean()
 scatterplt2
 
-ggarrange(scatterplt1, scatterplt2, ncol = 2, nrow = 1, labels = "AUTO")
+ggarrange(scatterplt1, scatterplt2, ncol = 2, nrow = 1, labels = "AUTO") #puts both graphs together
