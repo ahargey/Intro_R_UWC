@@ -45,16 +45,15 @@ hist(y)
 
 v <-rnorm(n = 200, m = 13, sd = 2)
 par(mfrow = c(2, 2))
-# using some basic base graphics as ggplot2 is overkill;
-# we can get a histogram using hist() statement
+#base code R histogram
 hist(v, main = "Histogram of observed data")
 plot(density(v), main = "Density estimate of data")
 plot(ecdf(v), main = "Empirical cumulative distribution function")
-# standardise the data
+#standardised data
 z.norm <- (v - mean(v)) / sd(v) 
-# make a qqplot
+#makes a qqplot
 qqnorm(z.norm)
-# add a 45-degree reference line
+#adds a 45-degree reference line
 abline(0, 1)
 
 # Random normal data
@@ -87,12 +86,12 @@ str(r_dat$sample)
  
 #structure function can look at the internal arrangements of an R object
 
-# create a single sample of random normal data
+#create random normal data
 set.seed(666)
 r_one <- data.frame(dat = rnorm(n = 20, mean = 20, sd = 5),
                     sample = "A")
 
-# check normality
+#check normality
 shapiro.test(r_one$dat) #data is norrmal because p > 0.05
 
 t.test(r_one$dat, mu = 15) 
@@ -100,10 +99,10 @@ t.test(r_one$dat, mu = 15)
 #data visualization
 ggplot(data = r_one, aes(y = dat, x = sample)) +
   geom_boxplot(fill = "lightsalmon") +
-  # population  mean (mu) = 20 #mean being close to median suggests normal distribution
+  #population  mean (mu) = 20 #mean being close to median suggests normal distribution
   geom_hline(yintercept = 20, colour = "blue", 
              size = 1, linetype = "dashed") +
-  # population  mean (mu) = 30
+  #population  mean (mu) = 30
   geom_hline(yintercept = 30, colour = "red", 
              size = 1, linetype = "dashed") +
   labs(y = "Value", x = NULL) +
