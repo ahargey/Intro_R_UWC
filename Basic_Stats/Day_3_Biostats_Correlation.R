@@ -18,8 +18,8 @@ ecklonia <- read_csv("data/ecklonia.csv")
 
 #Pearson correlation
 #Specify which correlation is done
-# Perform correlation analysis on two specific variables
-# Note that we do not need the final two arguments in this function to be stated
+#Perform correlation analysis on two specific variables
+# 
 cor.test(x = ecklonia$stipe_length, ecklonia$frond_length, #this is the code always used
          use = "everything", method = "pearson") #can be changed but not normally done
 
@@ -61,7 +61,7 @@ r_print <- paste0("r = ", #outcomes in environment as a value
                   round(cor(x = ecklonia$stipe_length, ecklonia$frond_length),2))
 #paste0 saves a value that can then be added as a value
 
-# Then create a single panel showing one correlation
+#One correlation
 ggplot(data = ecklonia, aes(x = stipe_length, y = frond_length)) +
   geom_smooth(method = "lm", colour = "grey90", se = F) +
   geom_point(colour = "mediumorchid4") +
@@ -79,5 +79,3 @@ corrplot(ecklonia_pearson, method = "circle")
 colour = colorRampPalette(brewer.pal(8, "PuOr"))(25)
 heatmap(ecklonia_pearson, scale="column",
         Colv = NA, Rowv = NA, col = colour)
-
-#code from https://www.r-graph-gallery.com/215-the-heatmap-function/
