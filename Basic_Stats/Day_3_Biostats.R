@@ -36,12 +36,11 @@ eruption_plot <- ggplot(faithful, aes(x = waiting, y = eruptions)) +
         axis.text.y = element_text(hjust = 1, colour = "black", size=12),
         plot.background = element_rect(fill = "#f0eae8"),
         plot.title = element_text(size=16, face="bold", hjust=0.5)) +
-  geom_label(aes(x = 40, y = 4.5), hjust = 0, 
+  geom_label(aes(x = 40, y = 4.5), hjust = 0, #adding the box with all the information
              label = paste("Adj R2 = ",signif(summary(eruption.lm)$adj.r.squared, 5),
                            "\nIntercept =",signif(eruption.lm$coef[[1]],5 ),
                            " \nSlope =",signif(eruption.lm$coef[[2]], 5),
-                           " \nP =",signif(summary(eruption.lm)$coef[2,4], 5))) +
-#CHECK  geom_annotate("DF = 270", x = 40, y = 4.5)
+                           " \nP =",signif(summary(eruption.lm)$coef[2,4], 5)))
 eruption_plot
 
 
