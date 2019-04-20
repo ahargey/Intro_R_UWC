@@ -220,10 +220,124 @@ prop.test(bridge_crossing) #testing proportions two-sided
 
 #EXERCISE 7.4
 
-#EXERCISE 9.6
+#7.4.1
+#given data
+feed_1 <- c(60.8, 57.0, 65.0, 58.6, 61.7)
+feed_2 <- c(68.7, 67.7, 74.0, 66.3, 69.8)
+feed_3 <- c(102.6, 102.1, 100.2, 96.5)
+feed_4 <- c(87.9, 84.2, 83.1, 85.7, 90.3)
 
+#made as a dataframe
+bacon <- as_tibble(data.frame(
+  feed = c(
+    rep("Feed 1", length(feed_1)),
+    rep("Feed 2", length(feed_2)),
+    rep("Feed 3", length(feed_3)),
+    rep("Feed 4", length(feed_4))
+  ),
+  mass = c(feed_1, feed_2, feed_3, feed_4)
+))
+
+pigs_boxplot <- ggplot(bacon, aes(x = feed, y = mass)) +
+  geom_boxplot(show.legend = TRUE, notch = FALSE, fill = c("tomato", "springgreen1", "olivedrab1", "pink2")) +
+  labs(x = "Feed Types", y = "Mass") +
+  ggtitle("Boxplot of the Effect of Feed Types on Pigs") + #title
+  theme_bw () + #modified theme 
+  theme(axis.text.x = element_text(angle = 40, hjust = 1, colour = "black", size=12),
+        axis.text.y = element_text(hjust = 1, colour = "black", size=12),
+        plot.background = element_rect(fill = "#f0eae8"),
+        plot.title = element_text(size=16, face="bold", hjust=0.5))
+pigs_boxplot
+
+#HYPOTHESIS
+#H0: Feed type does NOT have an effect on the mass  of pigs
+#H1: Feed type does have an effect on the mass of pigs
+
+#TWO-SIDED ANOVA
+
+bacon.anova <- aov(mass ~ feed, data = bacon)
+summary(bacon.anova)
+#p is smaller than 0.05 which  means there is a significant difference
+#in order to determine where the difference is
+
+TukeyHSD(bacon.anova)
+#the biggest differences lies between Feed 3 and Feed 1
+
+#the null hypothesis is rejected
+#the hypothesis is accepted
+
+#CONCLUSION
+#It was found there is a significant difference on whether feed type affects the mass of pigs (p > 0.000001, df = 3)
+
+#7.4.2
+teeth <- datasets::ToothGrowth
+
+#Explore the data
+glimpse(teeth) #overall preview of data, shows every column
+head(teeth) #first nine rows
+tail(teeth) #last nine rows
+nrow(teeth) #number of row
+ncol(teeth) #number of columns
+any(is.na(teeth)) #is there any missing data?
+summary(teeth)
+
+teeth$dose = factor(ToothGrowth$dose, levels=c(0.5,1.0,2.0), labels=c("low","med","high")) #dose treated as a factor now
+
+teeth_boxplot <- ggplot(teeth, aes(x = dose, y = len, fill = supp)) +
+  geom_boxplot(show.legend = TRUE, notch = FALSE) +
+  scale_fill_brewer(palette="Dark2") +
+  labs(x = "Dose", y = "Length (mm)") +
+  ggtitle("Boxplot of the Effect of Teeth Growth") + #title
+  theme_bw () + #modified theme 
+  theme(axis.text.x = element_text(angle = 40, hjust = 1, colour = "black", size=12),
+        axis.text.y = element_text(hjust = 1, colour = "black", size=12),
+        plot.background = element_rect(fill = "#f0eae8"),
+        plot.title = element_text(size=16, face="bold", hjust=0.5))
+teeth_boxplot
+
+#HYPOTHESIS
+#H0: There will be no difference in growth between the treatment of orange juice or Vitamin C(ascorbic acid)
+#H1: There will be a difference in growth between the treatment of orange juice or Vitamin C
+
+teeth_anova <- aov(len ~ supp, data = teeth) #anova analysis
+summary(teeth_anova)
+
+#P is not smaller than 0.05 so there is not a significant difference
+#Null hypothesis is accepted
+
+#CONCLUSION
+#There is no significant difference in the growth of guinea pig teeth when c onsuming either orange juice or ascorbic acid (p > 0.05, df - 1)
+
+#EXERCISE 7.4.3
+#continuing the use of the ToothGrowth data
+
+#HYPOTHESIS (two, because it's two-way)
+#H0: There will be no difference in growth between the treatment of orange juice or Vitamin C(ascorbic acid) 
+#H0: The amount of supplement consumed has no effect on the growth of teeth
+#H1: There will be a difference in growth between the treatment of orange juice or Vitamin C
+#H1: The amount of supplement consumed will have an effect on the growth of teeh
+
+two_way_teeth <- aov(len ~ supp + as.factor(dose), data = teeth) #two way anova
+summary(two_way_teeth)
+
+#P is less than 0.05 which means there is a significance 
+
+teeth_tukey <- TukeyHSD(two_way_teeth, which = "as.factor(dose)", conf.level = 0.90)
+plot(teeth_tukey, las = 1, col = "red")
+
+#there is a significant difference between high doses and low doses
+
+#CONCLUSION
+#There is no significant difference (P > 0.05) between the supplements given to the guinea pigs, whether it is orange juice or ascorbic acid on teeth growth.
+#However there is a significant difference between the effects on length on high or low dosage (P > 0.00002, df = 2) 
+
+#EXERCISE 9.6
+#making a heatmap using ggplot
 #using the default volcano dataset
 #adjusting to make it into a dataframe
+
+temp <- 
+
 nx = 87
 ny = 61
 volcano_data <- data.frame(height = c(volcano), x = rep(1:nx, ny), y = rep(1:ny, each = nx))
@@ -238,4 +352,4 @@ volcano_heatmap <- ggplot(volcano_data, aes(x = x, y = y, fill = height)) +
         axis.text.y = element_text(hjust = 1, colour = "black", size=12),
         plot.background = element_rect(fill = "#f0eae8"),
         plot.title = element_text(size=16, face="bold", hjust=0.5))
-volcano_heatmap
+volcano_heatmap #displays the heatmap
