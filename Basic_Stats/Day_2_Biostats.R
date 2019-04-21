@@ -180,3 +180,8 @@ TukeyHSD(aov(weight ~ Diet, data = filter(chicks, Time %in% c(2))))
 
 summary(aov(weight ~ Diet * as.factor(Time), data = filter(chicks, Time %in% c(0, 21))))
 TukeyHSD(aov(weight ~ Diet + as.factor(Time), data = filter(chicks, Time %in% c(0, 21))))
+
+# Neat
+# A bit more comments will make it easier for someone else to read
+# Its also good to write a mini info describing the script at the top of the script
+# Nicely done

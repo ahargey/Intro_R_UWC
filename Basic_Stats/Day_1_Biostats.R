@@ -246,3 +246,9 @@ scatterplt2 <- ggplot(data = iris, aes(x = Petal.Length, y = Petal.Width, colour
 scatterplt2
 
 ggarrange(scatterplt1, scatterplt2, ncol = 2, nrow = 1, labels = "AUTO") #puts both graphs together
+
+
+# Perfect script
+# Neat comments
+# tried different things
+# Nicely done
