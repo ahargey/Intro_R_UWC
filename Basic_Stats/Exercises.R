@@ -353,3 +353,8 @@ volcano_heatmap <- ggplot(volcano_data, aes(x = x, y = y, fill = height)) +
         plot.background = element_rect(fill = "#f0eae8"),
         plot.title = element_text(size=16, face="bold", hjust=0.5))
 volcano_heatmap #displays the heatmap
+
+# Wow! This is amazing
+# Great to see you trying new things and different thigs
+# This is what we are looking for! Nicely done
+# YIKES!! THIS WILL GET YOU VERY GOOD MARKS WITH YOUR ASSIGNMENT. nICELY DONE
