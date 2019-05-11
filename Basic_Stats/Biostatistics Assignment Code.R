@@ -69,32 +69,31 @@ group_stats <- cuckoos %>%
 group_stats
 
 
-cuckoos_box <- within(cuckoos, 
-                   species <- factor(species, 
-                                      levels=names(sort(table(species), 
-                                                        decreasing=TRUE))))
-
-cuckoos_box$species <- factor(cuckoos$species, levels = c("wren", "tree.pipit", "robin", "pied.wagtail", "meadow.pipit", "hedge.sparrow"))
-
-
-cuckoos_test$species <- factor(cuckoos_box$species, levels = cuckoos_box$species)
-
-cuckoos_test_1 <- with(cuckoos_test, relevel(species, "hedge.sparrow"))
-ggplot(cuckoos_test, aes(x = length, y = breadth, fill = cuckoos_test_1)) + 
-  geom_boxplot(aes(fill = cuckoos_test_1))
-
-cuckoo_boxplot <- ggplot(cuckoos, aes(x = fct_reorder(species, breadth, fun = median, .desc = TRUE), y = length)) + 
+#Boxplot for egg length
+cuckoo_boxplot_length <- ggplot(cuckoos, aes(x = fct_reorder(species, breadth, fun = median, .desc = TRUE), y = length)) + 
   geom_boxplot(aes(fill = fct_reorder(species, breadth, fun = median, .desc = TRUE))) + 
-  scale_fill_manual(values = brewer.pal(6, "Accent"), guide = guide_legend(title = "Species"), labels = c("Hedge Sparrow", 
-                                                                                                          "Meadow Pipit", 
-                                                                                                          "Tree Pipit", 
-                                                                                                          "Pied Wagtal", 
-                                                                                                          "Robin",
-                                                                                                          "Wren")) +
+  scale_fill_manual(values = brewer.pal(6, "Accent"), guide = guide_legend(title = "Species"), 
+                    labels = c("Hedge Sparrow", "Meadow Pipit", "Tree Pipit","Pied Wagtal", "Robin","Wren")) +
   geom_jitter(position=position_jitter(0.2)) +
-  labs(x = "Species", y = "Length (mm)", title = "Cuckoo Egg Length")
-cuckoo_boxplot
+  labs(x = "Species", y = "Length (mm)", title = "Cuckoo Egg Length") +
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_text(hjust = 1, colour = "black", size=12),
+        plot.background = element_rect(fill = "#f0eae8"),
+        plot.title = element_text(size=16, face="bold", hjust=0.5))
+cuckoo_boxplot_length
 
+#Boxplot for egg breadth
+cuckoo_boxplot_breadth <- ggplot(cuckoos, aes(x = fct_reorder(species, length, fun = median, .desc = TRUE), y = breadth)) + 
+  geom_boxplot(aes(fill = fct_reorder(species, length, fun = median, .desc = TRUE))) + 
+  scale_fill_manual(values = brewer.pal(6, "Accent"), guide = guide_legend(title = "Species"), 
+                    labels = c("Hedge Sparrow", "Meadow Pipit", "Tree Pipit","Pied Wagtal", "Robin","Wren")) +
+  geom_jitter(position=position_jitter(0.2)) +
+  labs(x = "Species", y = "Breadth (mm)", title = "Cuckoo Egg Breadth") +
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_text(hjust = 1, colour = "black", size=12),
+        plot.background = element_rect(fill = "#f0eae8"),
+        plot.title = element_text(size=16, face="bold", hjust=0.5))
+cuckoo_boxplot_breadth
 
  
 
