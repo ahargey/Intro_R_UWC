@@ -2,24 +2,146 @@
 title: "Biostatistics Assignment"
 author: "Ayesha Hargey"
 date: "May 9, 2019"
-output: html_document
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+header-includes: \usepackage{setspace}\doublespacing
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
-This investigation uses the cuckoo dataset. 
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r libraries, include=FALSE}
+library(fitdistrplus)
+library(tidyverse) #loaded second to prevent masking of the select function
+library(ggpubr)
+library(RColorBrewer) #for palettes
+library(ggthemes)
+library(logspline)
+library(e1071)
+library(corrplot)
+library(forcats)
+library(DAAG)
+cuckoos <- DAAG::cuckoos
 ```
+
+## Introduction
+
+The common cuckoo (*Cuculus canorus*) is a charismatic passerine bird and the keystone example of brood parasites in animals. The mother bird lays mimicking eggs into nests of small songbirds, and thereafter, the cuckoo hatchling eliminates the breeding success of the host by evicting all other eggs and offspring from the nest (Moskát and Hauber, 2007). This host is then responsible for the parental care of these genetically unrelated young. Many of these host species have evolved defense mechanisms to prevent or reduce the likelihood of raising a parasitic egg such as through ejection or the desertion of brood (Moskát and Hauber, 2007). This then selects for improved egg mimicry by the cuckoo (Marchetti, 2000). 
+
+However, this identification is highly variable as it hinges on the evolutionary history of the host species. Egg identification and discrimination, thus, most likely has a genetic basis (Martin-Galvez et al., 2006). The current prevailing theory of recognition is that hosts compare their own eggs with the parasitics and reject what looks different (Marchetti, 2000). Another theory relies on the concept of learning, a facet of which includes host birds memorize the pattern in which they lay their eggs (Hauber, Sherman and Paprika, 2000). Ultimately, these systems are strongly influenced by the extent of the mimetic similarity of the parasite egg to the host egg, with more accurate eggs being rejected at lower rates (Røskaft et al., 1991). There are costs to the host for egg rejection, most notably that mistaken identification can result in their own egg or brood being harmed or deserted, which could cause costs which outweigh the benefits (Davies, Brooke and Kacelnik, 1996).       
+
+Cuckoo birds present an opportunity to be assessed as an important indicator of avian biodiversity. It is a bird that is monitored with minimal difficult, has a global distribution and its distinctive call ensures easy identification (Haest, 2019). This further highlights the importance of studying the behavioural and reproductive habits of these birds.
+
+This study is limited due to its comparatively small sample size but provides a basis for future research into the field on the egg morphology of cuckoo birds. This study was conducted using 6 of the most common host birds which represents the largest proportion of species. 
+ 
+The purpose of this investigation is to determine if there is a relationship between the sizes of cuckoo eggs and the species of foster-parent. The length and breadth of cuckoo eggs were measured, with an additional comparison between the eggs of the host species. It is predicted that such a difference does exist.  
+
+## Methods
+
+## Results
+There is a clear visual distinction between cuckoo egg dimensions and the species of host parent. Figure 1 and 2 clearly demonstrate this, with wren being noticably smaller than the other species. 
+
+```{r cuckoo egg length boxplot, echo=FALSE}
+cuckoo_boxplot_length <- ggplot(cuckoos, aes(x = fct_reorder(species, breadth, fun = median, .desc = TRUE), y = length)) + 
+  geom_boxplot(aes(fill = fct_reorder(species, breadth, fun = median, .desc = TRUE))) + #reordered for efficency
+  scale_fill_manual(values = brewer.pal(6, "Accent"), guide = guide_legend(title = "Species"), 
+                    labels = c("Hedge Sparrow", "Meadow Pipit", "Tree Pipit","Pied Wagtail", "Robin","Wren")) +
+  geom_jitter(position=position_jitter(0.2)) +
+  labs(x = "Species", y = "Length (mm)", title = "Cuckoo Egg Length") +
+  theme(axis.text.x = element_blank(), #custom theme
+        axis.text.y = element_text(hjust = 1, colour = "black", size=12),
+        plot.background = element_rect(fill = "#f0eae8"),
+        panel.background = element_rect(fill = "#ffffff", colour = "#C0C0C0",
+                                        size = 2, linetype = "solid"),
+        plot.title = element_text(size=16, face="bold", hjust=0.5))
+cuckoo_boxplot_length
+```
+
+Figure 1: Diagram of cuckoo egg length corresponding to species of host-parent
+
+```{r cuckoo egg breadth boxplot, echo=FALSE}
+cuckoo_boxplot_breadth <- ggplot(cuckoos, aes(x = fct_reorder(species, length, fun = median, .desc = TRUE), y = breadth)) + 
+  geom_boxplot(aes(fill = fct_reorder(species, length, fun = median, .desc = TRUE))) + 
+  scale_fill_manual(values = brewer.pal(6, "Accent"), guide = guide_legend(title = "Species"), 
+                    labels = c("Hedge Sparrow", "Meadow Pipit", "Tree Pipit","Pied Wagtail", "Robin","Wren")) +
+  geom_jitter(position=position_jitter(0.2)) +
+  labs(x = "Species", y = "Breadth (mm)", title = "Cuckoo Egg Breadth") +
+  theme(axis.text.x = element_blank(), #custom theme
+        axis.text.y = element_text(hjust = 1, colour = "black", size=12),
+        plot.background = element_rect(fill = "#f0eae8"),
+        panel.background = element_rect(fill = "#ffffff", colour = "#C0C0C0",
+                                        size = 2, linetype = "solid"),
+        plot.title = element_text(size=16, face="bold", hjust=0.5))
+cuckoo_boxplot_breadth
+
+```
+
+Figure 2: Diagram of cuckoo egg breadth corresponding to species of host-parent
+
+```{r anova, fig.width = 12, fig.height = 4, echo=FALSE}
+cuckoo_anova_length <- aov(length ~ species, data = cuckoos)
+TK_length <- TukeyHSD(cuckoo_anova_length)
+#turning the results into a dataframe to be visually analyzed
+TK_length <- TukeyHSD(cuckoo_anova_length, "species", ordered = TRUE)
+TKdatalength <- as.data.frame(TK_length$species, rownames = FALSE) 
+TKdatalength <- cbind(species = rownames(TKdatalength), TKdatalength)
+rownames(TKdatalength) <- 1:nrow(TKdatalength) #making the index into a column
+
+length_tk_bar <- ggplot(TKdatalength, aes(x = species, y = diff, fill = species)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Species", y = "Difference in Length") +
+  theme(legend.position = "top",
+        axis.text.x = element_blank(),
+        axis.text.y = element_text(hjust = 1, colour = "black", size=12),
+        plot.background = element_rect(fill = "#f0eae8"),
+        panel.background = element_rect(fill = "#ffffff", colour = "#C0C0C0",
+                                        size = 2, linetype = "solid"))
+#STATISTICAL ANALYSIS OF BREADTH
+cuckoo_anova_breadth <- aov(breadth ~ species, data = cuckoos)
+TK_breadth <- TukeyHSD(cuckoo_anova_breadth, "species", ordered = TRUE)
+TKdatabreadth <- as.data.frame(TK_breadth$species, rownames = FALSE)
+TKdatabreadth <- cbind(species = rownames(TKdatabreadth), TKdatabreadth)
+rownames(TKdatabreadth) <- 1:nrow(TKdatabreadth) #making the index into a column
+
+breadth_tk_bar <- ggplot(TKdatabreadth, aes(x = species, y = diff, fill = species)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Species", y = "Difference in Breadth") +
+  theme(legend.position = "top",
+              axis.text.x = element_blank(),
+              axis.text.y = element_text(hjust = 1, colour = "black", size=12),
+              plot.background = element_rect(fill = "#f0eae8"),
+              panel.background = element_rect(fill = "#ffffff", colour = "#C0C0C0",
+                                              size = 2, linetype = "solid"))
+TK_full <- ggarrange(length_tk_bar, breadth_tk_bar, common.legend = TRUE, legend = "top")
+TK_full
+#combined graph
+
+```
+
+Figure 3: Tukey Analysis of Egg Length and Egg Breadth
+
+The largest difference occurs betwwen the Meadow Pipit and Wren, the Pied Wagtail and Wren, and the Tree Pipit and Wren. There is minimal difference among the bigger birds. In particular, there is a far greater significance in length than of breadth. Egg morphology in cuckoo birds is highly variable. 
+
+```{r correlation, echo=FALSE}
+pearson_cuckoos <- cor.test(x = cuckoos$length, cuckoos$breadth)
+r_print <- paste0("r = 0.5")
+correlation_cuckoos <- ggplot(data = cuckoos, aes(x = length, y = breadth)) +
+  geom_smooth(method = "lm", colour = "slategray2", se = F) +
+  geom_point(colour = "tomato2") +
+  geom_label(x = 20, y = 17.3, label = r_print) +
+  labs(x = "Egg length (mm)", y = "Egg breadth (mm)") +
+  theme_pubclean() 
+correlation_cuckoos
+```
+
+Figure 4: Pearson's correlation of egg length to egg breadth (r = 0.5)
+
+In an attempt to determine whether there was a relationship between egg breadth and egg length, a Pearson's correlation test was done, which yieled the result as displayed in Figure 4. With a value of r = 0.5, there is a slightly strong correlation between egg length and egg breadth, suggesting that it proportionally increased. 
+## Discussion
+
 
 ## Including Plots
 
