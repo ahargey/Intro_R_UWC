@@ -46,13 +46,18 @@ ggqqplot(cuckoos, x = "length") #checks for normality
 descdist(cuckoos$length, discrete = FALSE, boot = 100) #data is normal
 descdist(cuckoos$breadth, discrete = FALSE, boot = 100) #data is normal
 
+cuckoos %>% #test for homoscedasticity
+  group_by(species) %>%
+  summarise(length_var = var(length),
+            breadth_var = var(breadth)) 
+#variance is not 2-4 times greater
+#data is homoscedastic 
+
 cuckoos_stats <- group_by(cuckoos, species) %>% 
   summarise(
     count = n(), 
     mean = mean(length, na.rm = TRUE),
     sd = sd(length, na.rm = TRUE))
-
-
 
 group_stats <- cuckoos %>%
   group_by(species) %>%
@@ -68,17 +73,18 @@ group_stats <- cuckoos %>%
             n_len = n())
 group_stats
 
-
 #Boxplot for egg length
 cuckoo_boxplot_length <- ggplot(cuckoos, aes(x = fct_reorder(species, breadth, fun = median, .desc = TRUE), y = length)) + 
   geom_boxplot(aes(fill = fct_reorder(species, breadth, fun = median, .desc = TRUE))) + 
   scale_fill_manual(values = brewer.pal(6, "Accent"), guide = guide_legend(title = "Species"), 
-                    labels = c("Hedge Sparrow", "Meadow Pipit", "Tree Pipit","Pied Wagtal", "Robin","Wren")) +
+                    labels = c("Hedge Sparrow", "Meadow Pipit", "Tree Pipit","Pied WagtaIl", "Robin","Wren")) +
   geom_jitter(position=position_jitter(0.2)) +
   labs(x = "Species", y = "Length (mm)", title = "Cuckoo Egg Length") +
   theme(axis.text.x = element_blank(),
         axis.text.y = element_text(hjust = 1, colour = "black", size=12),
         plot.background = element_rect(fill = "#f0eae8"),
+        panel.background = element_rect(fill = "#ffffff", colour = "#C0C0C0",
+                                        size = 2, linetype = "solid"),
         plot.title = element_text(size=16, face="bold", hjust=0.5))
 cuckoo_boxplot_length
 
@@ -86,40 +92,80 @@ cuckoo_boxplot_length
 cuckoo_boxplot_breadth <- ggplot(cuckoos, aes(x = fct_reorder(species, length, fun = median, .desc = TRUE), y = breadth)) + 
   geom_boxplot(aes(fill = fct_reorder(species, length, fun = median, .desc = TRUE))) + 
   scale_fill_manual(values = brewer.pal(6, "Accent"), guide = guide_legend(title = "Species"), 
-                    labels = c("Hedge Sparrow", "Meadow Pipit", "Tree Pipit","Pied Wagtal", "Robin","Wren")) +
+                    labels = c("Hedge Sparrow", "Meadow Pipit", "Tree Pipit","Pied WagtaIl", "Robin","Wren")) +
   geom_jitter(position=position_jitter(0.2)) +
   labs(x = "Species", y = "Breadth (mm)", title = "Cuckoo Egg Breadth") +
   theme(axis.text.x = element_blank(),
         axis.text.y = element_text(hjust = 1, colour = "black", size=12),
         plot.background = element_rect(fill = "#f0eae8"),
+        panel.background = element_rect(fill = "#ffffff", colour = "#C0C0C0",
+                                        size = 2, linetype = "solid"),
         plot.title = element_text(size=16, face="bold", hjust=0.5))
 cuckoo_boxplot_breadth
 
- 
 
-  facet_wrap(~variable, labeller = labeller(variable = facet.names)) +
-  labs(y = "Size (mm)", title = "A box plot...", subtitle = "...of the Iris data") +
-  theme(axis.text.x = element_text(face = "italic"))
-
-, labeller = labeller(variable = facet.names)) +
-  labs(y = "Size (mm)", title = "A box plot...", subtitle = "...of the Iris data") +
-  theme(axis.text.x = element_text(face = "italic"))
-
-#TEST ANOVA
-cuckoo.anova <- aov(length ~ species, data = cuckoos)
-summary(cuckoo.anova)
+#STATISTICAL ANALYSIS OF LENGTH
+cuckoo_anova_length <- aov(length ~ species, data = cuckoos)
+summary(cuckoo_anova_length)
 #p is smaller than 0.05 which  means there is a significant difference
 #in order to determine where the difference is
 
-TukeyHSD(cuckoo.anova)
-#the biggest differences lies between Feed 3 and Feed 1
+TK_length <- TukeyHSD(cuckoo_anova_length)
 
-pearson <- cor.test(x = cuckoos$length, cuckoos$breadth,
-         use = "everything", method = "pearson")
+TK_length <- TukeyHSD(cuckoo_anova_length, "species", ordered = TRUE)
+TKdatalength <- as.data.frame(TK_length$species, rownames = FALSE) #idk man come back
+TKdatalength <- cbind(species = rownames(TKdatalength), TKdatalength)
+rownames(TKdatalength) <- 1:nrow(TKdatalength) #making the index into a column
 
-install.packages("scatterplot3d") # Install
-library("scatterplot3d") # load
+length_tk_bar <- ggplot(TKdatalength, aes(x = species, y = diff, fill = species)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Difference in Length", y = "Species") +
+  title("Tukey Analysis") +
+  theme(legend.position = "top",
+        axis.text.x = element_blank(),
+        axis.text.y = element_text(hjust = 1, colour = "black", size=12),
+        plot.background = element_rect(fill = "#f0eae8"),
+        panel.background = element_rect(fill = "#ffffff", colour = "#C0C0C0",
+                                        size = 2, linetype = "solid"))
 
-colors <- c("#999999", "#E69F00", "#56B4E9","#16ccad", "#15da32", "#1c699d")
-colors <- colors[as.numeric(cuckoos$species)]
-scatterplot3d(cuckoos[,1:2], pch = 16, color= colors)
+#STATISTICAL ANALYSIS OF BREADTH
+cuckoo_anova_breadth <- aov(breadth ~ species, data = cuckoos)
+summary(cuckoo_anova_breadth)
+
+TK_breadth <- TukeyHSD(cuckoo_anova_breadth, "species", ordered = TRUE)
+TKdatabreadth <- as.data.frame(TK_breadth$species, rownames = FALSE) #idk man come back
+TKdatabreadth <- cbind(species = rownames(TKdatabreadth), TKdatabreadth)
+rownames(TKdatabreadth) <- 1:nrow(TKdatabreadth) #making the index into a column
+
+breadth_tk_bar <- ggplot(TKdatabreadth, aes(x = species, y = diff, fill = species)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Difference in Breadth", y = "Species") +
+  title("Tukey Analysis") +
+  theme(legend.position = "top",
+              axis.text.x = element_blank(),
+              axis.text.y = element_text(hjust = 1, colour = "black", size=12),
+              plot.background = element_rect(fill = "#f0eae8"),
+              panel.background = element_rect(fill = "#ffffff", colour = "#C0C0C0",
+                                              size = 2, linetype = "solid"))
+
+ggarrange(length_tk_bar, breadth_tk_bar, common.legend = TRUE, legend = "top")
+
+#CORRELATION
+pearson_cuckoos <- cor.test(x = cuckoos$length, cuckoos$breadth)
+pearson_cuckoos #0.5 slightly strong
+
+r_print <- paste0("r = 0.5")
+correlation_cuckoos <- ggplot(data = cuckoos, aes(x = length, y = breadth)) +
+  geom_smooth(method = "lm", colour = "slategray2", se = F) +
+  geom_point(colour = "tomato2") +
+  geom_label(x = 20, y = 17.3, label = r_print) +
+  labs(x = "Egg length (mm)", y = "Egg breadth (mm)") +
+  theme_pubclean() 
+correlation_cuckoos 
+
+#CUCKOO HOSTS
+cuckoohosts <- DAAG::cuckoohosts
+cuckoohosts <- cuckoohosts[-c(7, 8, 9, 10),] #deleting species of birds for observations not recorded
+cuckoohosts <- cbind(species = rownames(cuckoohosts), cuckoohosts)
+rownames(cuckoohosts) <- 1:nrow(cuckoohosts) #making the index into a column
+
