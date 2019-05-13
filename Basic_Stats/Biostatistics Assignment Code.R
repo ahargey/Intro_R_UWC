@@ -197,7 +197,7 @@ ggplot(bar_cuckoohosts, aes(x = species, y = value, fill = variable)) +
                                         size = 2, linetype = "solid"),
         plot.title = element_text(size = 16, face = "bold", hjust = 0.5))
 
-#EGG NUMBERS #THIS NEEDS TO GO IN RMARKDOWN
+#EGG NUMBERS #THIS NEEDS TO GO IN RMARKDOWN PASTED
 cuckoohosts2 <- cuckoohosts #making a dataframe for graph creation
 cuckooeggnumbers <- cuckoohosts2 %>% 
   select(1, 6, 11) %>% 
