@@ -12,6 +12,7 @@ library(logspline)
 library(e1071)
 library(corrplot)
 library(forcats)
+library(reshape2)
 
 #Dataset chosen
 if (!require(DAAG)) install.packages('DAAG')
@@ -167,3 +168,53 @@ correlation_cuckoos <- ggplot(data = cuckoos, aes(x = length, y = breadth)) +
   labs(x = "Egg length (mm)", y = "Egg breadth (mm)") +
   theme_pubclean() 
 correlation_cuckoos 
+
+#CUCKOO EGG MATCHING
+cuckoohosts <- DAAG::cuckoohosts
+cuckoohosts <- cbind(species = rownames(cuckoohosts), cuckoohosts)
+rownames(cuckoohosts) <- 1:nrow(cuckoohosts)
+
+cuckoohosts <- cuckoohosts %>% 
+slice(1:6) #delete other rows
+
+#CUCKOO HOST MATCHING #THIS NEEDS TO GO IN RMARKDOWN
+cuckoohosts1 <- cuckoohosts #making a dataframe for graph creation
+cuckoohosts1 <- cuckoohosts %>% 
+  select(1, 12, 13)
+bar_cuckoohosts <- melt(cuckoohosts1, id.vars='species')
+
+ggplot(bar_cuckoohosts, aes(x = species, y = value, fill = variable)) +
+  geom_bar(stat = 'identity', position = 'dodge') + #needs to be prettier +
+  scale_fill_manual(values = brewer.pal(2, "Accent"), guide = guide_legend(title = "Egg Matching"), 
+                    labels = c("Match", "Not a Match")) +
+  labs(x = "Species", y = "Amount of Eggs", title = "Matched Cuckoo Eggs") +
+  scale_x_discrete(labels = c("meadow.pipit" = "Meadow Pipit", "tree.pipit" = "Tree Pipit",
+                            "hedge.sparrow" = "Hedge Sparrow", "wagtails" = "Pied Wagtail", "robin" = "Robin", "wren" = "Wren")) +
+  theme(axis.text.x = element_text(angle = 40, hjust = 1, colour = "black", size = 12), #custom theme
+        axis.text.y = element_text(hjust = 1, colour = "black", size = 12),
+        plot.background = element_rect(fill = "#f0eae8"),
+        panel.background = element_rect(fill = "#ffffff", colour = "#C0C0C0",
+                                        size = 2, linetype = "solid"),
+        plot.title = element_text(size = 16, face = "bold", hjust = 0.5))
+
+#EGG NUMBERS #THIS NEEDS TO GO IN RMARKDOWN
+cuckoohosts2 <- cuckoohosts #making a dataframe for graph creation
+cuckooeggnumbers <- cuckoohosts2 %>% 
+  select(1, 6, 11) %>% 
+  slice(1:5) #wren is deselected
+
+bar_cuckooeggs <- melt(cuckooeggnumbers, id.vars='species') 
+
+ggplot(bar_cuckooeggs, aes(x = species, y = value, fill = variable)) +
+  geom_bar(stat = 'identity', position = 'dodge') + #needs to be prettier +
+  scale_fill_manual(values = brewer.pal(2, "Set2"), guide = guide_legend(title = "Egg Numbers"), 
+                    labels = c("Cuckoo Eggs", "Host Eggs")) +
+  labs(x = "Species", y = "Amount of Eggs", title = "Cuckoo Eggs") +
+  scale_x_discrete(labels = c("meadow.pipit" = "Meadow Pipit", "tree.pipit" = "Tree Pipit",
+                              "hedge.sparrow" = "Hedge Sparrow", "wagtails" = "Pied Wagtail", "robin" = "Robin")) +
+  theme(axis.text.x = element_text(angle = 40, hjust = 1, colour = "black", size = 12), #custom theme
+        axis.text.y = element_text(hjust = 1, colour = "black", size = 12),
+        plot.background = element_rect(fill = "#f0eae8"),
+        panel.background = element_rect(fill = "#ffffff", colour = "#C0C0C0",
+                                        size = 2, linetype = "solid"),
+        plot.title = element_text(size = 16, face = "bold", hjust = 0.5))
