@@ -44,6 +44,9 @@ The purpose of this investigation is to determine if there is a relationship bet
 ## Results
 There is a clear visual distinction between cuckoo egg dimensions and the species of host parent. Figure 1 and 2 clearly demonstrate this, with wren being noticably smaller than the other species. 
 
+Using R, a two-sided ANOVA was conducted between the cuckoo egg the species of host-parent. It was found that there is a significant difference in the relationship between the species of host-parent and the cuckoo egg length (P > 0.00001, df = 5). This was further refined through the use of a Tukey analysis, the results of which are displayed in Figure X.  
+
+
 ```{r cuckoo egg length boxplot, echo=FALSE}
 cuckoo_boxplot_length <- ggplot(cuckoos, aes(x = fct_reorder(species, breadth, fun = median, .desc = TRUE), y = length)) + 
   geom_boxplot(aes(fill = fct_reorder(species, breadth, fun = median, .desc = TRUE))) + #reordered for efficency
