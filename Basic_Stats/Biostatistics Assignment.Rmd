@@ -3,10 +3,10 @@ title: "Biostatistics Assignment"
 author: "Ayesha Hargey"
 date: "May 9, 2019"
 output:
-  word_document: default
-  html_document: default
   pdf_document: default
-header-includes: \usepackage{setspace}\doublespacing
+  html_document: default
+  word_document: default
+header-includes: \usepackage{setspace}\linespread{2} #double spacing 
 ---
 
 ```{r setup, include=FALSE}
@@ -38,6 +38,8 @@ Cuckoo birds present an opportunity to be assessed as an important indicator of 
 This study is limited due to its comparatively small sample size but provides a basis for future research into the field on the egg morphology of cuckoo birds. This study was conducted using 6 of the most common host birds which represents the largest proportion of species. 
  
 The purpose of this investigation is to determine if there is a relationship between the sizes of cuckoo eggs and the species of foster-parent. The length and breadth of cuckoo eggs were measured, with an additional comparison between the eggs of the host species. It is predicted that such a difference does exist.  
+
+******
 
 ## Methods
 
