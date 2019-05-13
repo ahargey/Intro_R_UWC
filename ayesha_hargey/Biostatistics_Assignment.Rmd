@@ -1,0 +1,238 @@
+---
+title: "Egg morphology in the common cuckoo (*Cuculus canorus*)" #CHECK SPECIES IN REF
+subtitle: "3650393"
+author: "Ayesha Hargey"
+date: "May 13, 2019"
+bibliography: "BiostatisticsRef.bib"
+nocite: '@*'
+output:
+  word_document: default
+  html_document: default
+  pdf_document:  default
+header-includes: 
+  - \usepackage{setspace}\linespread{2} #double spacing
+  - \usepackage{float}
+  - \floatplacement{figure}{H} #keeps figures in their correct places
+  - \floatstyle{boxed} 
+  - \restylefloat{figure}
+                 
+                 
+---
+```{r global_options, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(fig.pos = "H")
+```
+
+```{r libraries, warning=FALSE, include=FALSE}
+library(fitdistrplus)
+library(tidyverse) #loaded second to prevent masking of the select function
+library(ggpubr)
+library(RColorBrewer) #for palettes
+library(ggthemes)
+library(logspline)
+library(e1071)
+library(corrplot)
+library(forcats)
+library(DAAG) #library where dataset is generated 
+library(reshape2)
+cuckoos <- DAAG::cuckoos
+```
+\newpage
+## Introduction
+
+The common cuckoo (*Cuculus canorus*) is a charismatic passerine bird and is the keystone example of brood parasites in animals. The mother bird lays mimicking eggs into nests of small songbirds, and thereafter, the cuckoo hatchling eliminates the breeding success of the host by evicting all other eggs and offspring from the nest (Moskát and Hauber, 2007). This host is then responsible for the parental care of these genetically unrelated young. Cuckoo birds are obligate brood parasites, and thus have no other method of egg rearing (Krüger and Davies, 2004). Many of these host species have evolved defense mechanisms to prevent or reduce the likelihood of raising a parasitic egg such as through ejection or the desertion of brood (Moskát and Hauber, 2007). This then selects for improved egg mimicry by the cuckoo (Marchetti, 2000). 
+
+However, this identification is highly variable as it hinges on the evolutionary history of the host species. Egg identification and discrimination, thus, most likely has a genetic basis (Martin-Galvez et al., 2006). The current prevailing theory behind egg recognition is that hosts compare their own eggs with the parasites and reject what looks different (Marchetti, 2000). Another theory relies on the concept of learning, a facet of which includes host birds memorizing the pattern in which they lay their eggs (Hauber, Sherman and Paprika, 2000). Ultimately, these systems are strongly influenced by the extent of the mimetic similarity of the parasite egg to the host egg, with more accurate eggs being rejected at lower rates (Røskaft et al., 1991). There are costs to the host for egg rejection, most notably that mistaken identification can result in their own egg or brood being harmed or deserted, which could cause costs which outweigh the benefits (Davies, Brooke and Kacelnik, 1996).       
+
+Cuckoo birds present an opportunity to be assessed as an important indicator of avian biodiversity. It is a bird that is monitored with minimal difficulty, has a global distribution and its distinctive call ensures easy identification (Haest, 2019). This further highlights the importance of studying the behavioural and reproductive habits of these birds.
+
+This study is limited due to its comparatively small sample size, restricted to museum specimens but provides a basis for future research of the egg morphology of cuckoo birds. This study was conducted using 6 of the most common host birds which represents the largest proportion of host species. 
+ 
+The purpose of this investigation is to determine if there is a relationship between the morphology of cuckoo eggs and the species of host-parent. The length and breadth of cuckoo eggs were measured, with an additional comparison between the eggs of the host species. It is predicted that such a difference does exist. Furthermore, in the interest of the continuing study of cuckoo eggs and the host-parent species, it will also be observed the difference in matching colouration and the amount of eggs per species.   
+
+## Methods
+
+The study was conducted through the use of museum specimens, in which 44 cuckoo bird eggs were collected from the Charterhouse Museum. Thereafter, a large amount of eggs from the British Museum of Natural History which brought the total number of eggs to 243. For the purpose of this investigation, a sample of 120 were analyzed. Of these eggs, they originated from nests of 6 species of bird. 
+
+The bird species used were the meadow pipit (*Anthus pratensis*), the tree pipit (*Anthus trivialis*), the hedge sparrow (*Prunella modularis*), the robin (*Erithacus rubecula*), pied wagtail (*Motacilla alba yarrellii*) and the wren (*Troglodytes troglodytes*).
+
+The greatest length and greatest breadth of the eggs were measured by using sliding callipers reading to millimeters. Statistical analysis was done in R (R Core Team, 2018). An ANOVA was done to determine the relationship between the length of eggs and the host species, as well as between the breadth of eggs and the host species. A Pearson correlation was done to determine if any relationship existed between egg length and breadth as well. 
+
+## Results
+
+There is a clear visual distinction between cuckoo egg dimensions and the species of host parent. The figure below clearly demonstrates this, with eggs being cared for by wrens being noticably smaller than the other host species. 
+
+```{r cuckoo egg code, include=FALSE}
+cuckoo_boxplot_length <- ggplot(cuckoos, aes(x = fct_reorder(species, breadth, fun = median, .desc = TRUE), y = length)) + 
+  geom_boxplot(aes(fill = fct_reorder(species, breadth, fun = median, .desc = TRUE))) + #reordered for efficency
+  scale_fill_manual(values = brewer.pal(6, "Accent"), guide = guide_legend(title = "Species"), 
+                    labels = c("Hedge Sparrow", "Meadow Pipit", "Tree Pipit","Pied Wagtail", "Robin","Wren")) +
+  geom_jitter(position=position_jitter(0.2)) +
+  labs(x = "Species", y = "Length (mm)", title = "Cuckoo Egg Length") +
+  theme(axis.text.x = element_blank(), #custom theme
+        axis.text.y = element_text(hjust = 1, colour = "black", size=12),
+        plot.background = element_rect(fill = "#f0eae8"),
+        panel.background = element_rect(fill = "#ffffff", colour = "#C0C0C0",
+                                        size = 2, linetype = "solid"),
+        plot.title = element_text(size=16, face="bold", hjust=0.5))
+
+cuckoo_boxplot_breadth <- ggplot(cuckoos, aes(x = fct_reorder(species, length, fun = median, .desc = TRUE), y = breadth)) + 
+  geom_boxplot(aes(fill = fct_reorder(species, length, fun = median, .desc = TRUE))) + 
+  scale_fill_manual(values = brewer.pal(6, "Accent"), guide = guide_legend(title = "Species"), 
+                    labels = c("Hedge Sparrow", "Meadow Pipit", "Tree Pipit","Pied Wagtail", "Robin","Wren")) +
+  geom_jitter(position=position_jitter(0.2)) +
+  labs(x = "Species", y = "Breadth (mm)", title = "Cuckoo Egg Breadth") +
+  theme(axis.text.x = element_blank(), #custom theme
+        axis.text.y = element_text(hjust = 1, colour = "black", size=12),
+        plot.background = element_rect(fill = "#f0eae8"),
+        panel.background = element_rect(fill = "#ffffff", colour = "#C0C0C0",
+                                        size = 2, linetype = "solid"),
+        plot.title = element_text(size=16, face="bold", hjust=0.5))
+
+```
+
+```{r cuckoo egg breadth boxplot, echo=FALSE, fig.width = 12, fig.height = 4, fig.cap=paste("Diagram of cuckoo egg length and breadth corresponding to species of host-parent")}
+boxplots <- ggarrange(cuckoo_boxplot_length, cuckoo_boxplot_breadth, common.legend = TRUE, legend = "top")
+boxplots
+```
+*Diagram of cuckoo egg length and breadth corresponding to species of host-parent*
+
+The largest variation in size occurs in the meadow pipit, while the other host-parent species have a relatively proportional size.
+
+Using R, a two-sided ANOVA was conducted between the cuckoo egg the species of host-parent. It was found that there is a highly significant difference in the relationship between the species of host-parent and the cuckoo egg length *(P < 0.00000002, df = 5)*. Furthermore, there is a significant difference between the species of host-parent and cuckoo egg breadth *(P < 0.00000001, df = 5)*. This was further refined through the use of a Tukey analysis, the results of which are displayed in Figure 1.  
+
+```{r set up, include=FALSE}
+cuckoo_anova_length <- aov(length ~ species, data = cuckoos)
+TK_length <- TukeyHSD(cuckoo_anova_length)
+#turning the results into a dataframe to be visually analyzed
+TK_length <- TukeyHSD(cuckoo_anova_length, "species", ordered = TRUE)
+TKdatalength <- as.data.frame(TK_length$species, rownames = FALSE) 
+TKdatalength <- cbind(species = rownames(TKdatalength), TKdatalength)
+rownames(TKdatalength) <- 1:nrow(TKdatalength) #making the index into a column
+
+length_tk_bar <- ggplot(TKdatalength, aes(x = species, y = diff, fill = species)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Species", y = "Difference in Length") +
+  theme(legend.position = "top",
+        axis.text.x = element_blank(),
+        axis.text.y = element_text(hjust = 1, colour = "black", size=12),
+        plot.background = element_rect(fill = "#f0eae8"),
+        panel.background = element_rect(fill = "#ffffff", colour = "#C0C0C0",
+                                        size = 2, linetype = "solid"))
+#STATISTICAL ANALYSIS OF BREADTH
+cuckoo_anova_breadth <- aov(breadth ~ species, data = cuckoos)
+TK_breadth <- TukeyHSD(cuckoo_anova_breadth, "species", ordered = TRUE)
+TKdatabreadth <- as.data.frame(TK_breadth$species, rownames = FALSE)
+TKdatabreadth <- cbind(species = rownames(TKdatabreadth), TKdatabreadth)
+rownames(TKdatabreadth) <- 1:nrow(TKdatabreadth) #making the index into a column
+
+breadth_tk_bar <- ggplot(TKdatabreadth, aes(x = species, y = diff, fill = species)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Species", y = "Difference in Breadth") +
+  theme(legend.position = "top",
+              axis.text.x = element_blank(),
+              axis.text.y = element_text(hjust = 1, colour = "black", size=12),
+              plot.background = element_rect(fill = "#f0eae8"),
+              panel.background = element_rect(fill = "#ffffff", colour = "#C0C0C0",
+                                              size = 2, linetype = "solid"))
+```
+
+```{r anova, fig.width = 12, fig.height = 4, echo=FALSE, fig.cap=paste("Tukey Analysis of Egg Length and Egg Breadth")}
+TK_full <- ggarrange(length_tk_bar, breadth_tk_bar, common.legend = TRUE, legend = "top")
+TK_full
+#combined graph
+```
+
+The largest difference occurs between the hedge sparrow and wren for both length *(diff = -1.99, p adj = 0.0000005)* and breadth *(diff = 0.93, p adj = 0.0000012)*. There is a greater difference in length. The pied wagtail and wren have a similarly high difference, with a larger gap in breadth *(diff = 0.67, p adj = 0.0007)* than length *(diff = -1.76, p adj = 0.0000069)*. There is minimal difference among the bigger birds, with the largest in the egg breadth between the tree pipit and the meadow pipit *(diff = 0.073, p adj = 0.99)*. In particular, there is a far greater significance in length than of breadth. Egg morphology in cuckoo birds is highly variable. 
+
+```{r correlation, echo=FALSE, fig.cap=paste("Pearson's correlation of egg length to egg breadth (r = 0.5)")}
+pearson_cuckoos <- cor.test(x = cuckoos$length, cuckoos$breadth)
+r_print <- paste0("r = 0.5")
+correlation_cuckoos <- ggplot(data = cuckoos, aes(x = length, y = breadth)) +
+  geom_smooth(method = "lm", colour = "slategray2", se = F) +
+  geom_point(colour = "tomato2") +
+  geom_label(x = 20, y = 17.3, label = r_print) +
+  labs(x = "Egg length (mm)", y = "Egg breadth (mm)") +
+  theme_pubclean() 
+correlation_cuckoos
+```
+
+In an attempt to determine whether there was a relationship between egg breadth and egg length, a Pearson's correlation test was done, which yieled the result as displayed in Figure 2. With a value of *r = 0.5*, there is a slightly strong correlation between egg length and egg breadth, suggesting that it proportionally increases *(p < 0.05, t = 6.30, df = 118)*. 
+
+Data was analyzed of the nest of host-species, particularly that of whether the cuckoo egg matches the other eggs of the host, as well as the amount of eggs in relation to the eggs of the host. This is to further determine if there's any difference in cuckoo egg morphology and the species of host parent.  
+
+```{r cuckoo host matching, echo=FALSE, warning=FALSE, fig.cap=paste("Cuckoo egg matches in host-species nest")}
+#CUCKOO HOST MATCHING
+cuckoohosts <- DAAG::cuckoohosts
+cuckoohosts <- cbind(species = rownames(cuckoohosts), cuckoohosts)
+rownames(cuckoohosts) <- 1:nrow(cuckoohosts)
+cuckoohosts <- cuckoohosts %>% 
+slice(1:6)
+cuckoohosts1 <- cuckoohosts #making a dataframe for graph creation
+cuckoohosts1 <- cuckoohosts %>% 
+  select(1, 12, 13)
+bar_cuckoohosts <- melt(cuckoohosts1, id.vars='species')
+
+bar_match <- ggplot(bar_cuckoohosts, aes(x = species, y = value, fill = variable)) +
+  geom_bar(stat = 'identity', position = 'dodge') + #needs to be prettier +
+  scale_fill_manual(values = brewer.pal(2, "Accent"), guide = guide_legend(title = "Egg Matching"), 
+                    labels = c("Match", "Not a Match")) +
+  labs(x = "Species", y = "Amount of Eggs", title = "Matched Cuckoo Eggs") +
+  scale_x_discrete(labels = c("meadow.pipit" = "Meadow Pipit", "tree.pipit" = "Tree Pipit",
+                            "hedge.sparrow" = "Hedge Sparrow", "wagtails" = "Pied Wagtail", "robin" = "Robin", "wren" = "Wren")) +
+  theme(axis.text.x = element_text(angle = 40, hjust = 1, colour = "black", size = 12), #custom theme
+        axis.text.y = element_text(hjust = 1, colour = "black", size = 12),
+        plot.background = element_rect(fill = "#f0eae8"),
+        panel.background = element_rect(fill = "#ffffff", colour = "#C0C0C0",
+                                        size = 2, linetype = "solid"),
+        plot.title = element_text(size = 16, face = "bold", hjust = 0.5))
+bar_match
+```
+
+Egg matching, defined by the colouration of the cuckoo egg being closely similar in relation to the host species's own eggs, is highly variable *(n = 161)*. This matching is to a degree that the host species of bird would reliably mistake this parasitzed egg to their own. There are incidents of matching in all of the species with the exception of those in the nests of wrens, of which there were no matches in the nests of wrens. There was a high incidence of egg matching in meadow pipits, and a smaller but still discernible amount in the pied wagtail.     
+
+```{r host egg numbers, echo=FALSE, warning=FALSE, fig.cap=paste("Cuckoo egg amount in relation to host-species eggs")}
+#HOST EGG NUMBERS 
+cuckoohosts2 <- cuckoohosts #making a dataframe for graph creation
+cuckooeggnumbers <- cuckoohosts2 %>% 
+  select(1, 6, 11) %>% 
+  slice(1:5) #wren is deselected
+
+bar_cuckooeggs <- melt(cuckooeggnumbers, id.vars='species') 
+
+bar_eggnumber <- ggplot(bar_cuckooeggs, aes(x = species, y = value, fill = variable)) +
+  geom_bar(stat = 'identity', position = 'dodge') + #needs to be prettier +
+  scale_fill_manual(values = brewer.pal(2, "Set2"), guide = guide_legend(title = "Egg Numbers"), 
+                    labels = c("Cuckoo Eggs", "Host Eggs")) +
+  labs(x = "Species", y = "Amount of Eggs", title = "Cuckoo Eggs") +
+  scale_x_discrete(labels = c("meadow.pipit" = "Meadow Pipit", "tree.pipit" = "Tree Pipit",
+                              "hedge.sparrow" = "Hedge Sparrow", "wagtails" = "Pied Wagtail", "robin" = "Robin")) +
+  theme(axis.text.x = element_text(angle = 40, hjust = 1, colour = "black", size = 12), #custom theme
+        axis.text.y = element_text(hjust = 1, colour = "black", size = 12),
+        plot.background = element_rect(fill = "#f0eae8"),
+        panel.background = element_rect(fill = "#ffffff", colour = "#C0C0C0",
+                                        size = 2, linetype = "solid"),
+        plot.title = element_text(size = 16, face = "bold", hjust = 0.5))
+bar_eggnumber
+```
+
+Due to experimental flaws, no wren data was collected for this particular observation, and thus wrens were excluded from the data analysis *(n = 316)*. With the exception of the pied wagtail, there are always more host eggs than cuckoo eggs. The largest difference is from robins in the amount of cuckoo eggs in relation to host eggs, followed by meadow pipits. Further than this, the values recorded are relatively constant among the various species of host bird, with robins and tree pipits having nearly the same amount of cuckoo eggs recorded *(n = 15/16)*.  
+
+\newpage
+## Discussion
+Egg morphology is highly variable in the common cuckoo. This experiment set out to display this degree of variation in length and breadth by examining the differences in eggs reared by six different species of bird that was hosting the young. Figure 1 demonstrates the clear differences between these species. It is of particular interest that meadow pipits have such a high incidence of nest parasitism. Rather than assume ignorance on the bird’s part, it is possible that the host recognizes the intruder of a cuckoo bird too late, such as when it is newly hatched, where it is too costly to attempt to eject it from the nest (Krüger and Davies, 2004). The same study also suggests that cuckoo birds favour nests with more host eggs, which is in line with the findings of this study.
+
+Despite any change in size, the breadth and length remain proportional as evidenced by the Pearson correlation done in Figure 2, which showed exactly this. It is also of interest that, as seen in Figure 3, there are no matches of cuckoo eggs to host eggs on the basis of colour. A possible explanation to this is is given by Latter (1902) where he notes that the wren constructs its nest in such a manner that it renders the view of the eggs obtuse, therefore a failure in colour-matching will have no effect on whether or not the parasitized egg is identified.   
+
+A possible explanation of the observations in Figure 4 regarding the frequency of host eggs in comparison to cuckoo eggs could be the idea of hiding these eggs. Only certain species of bird are able to discriminate parasitized eggs by observation (Hauber, Sherman and Paprika, 2000). Furthermore, it is important to note that while rejection behaviour of host birds appears to be innate, rejection decisions are based on the characteristics of eggs currently in the nest (Marchetti, 2000). Egg matching by colour is also found to be highly variable. Colour matching is an exhaustive activity and could be ultimately unnecessary.   
+
+Seeing such variety among egg morphology in six different species of host is in line with the study of Moksnes and Røskaft (1995) which concluded that the cuckoo is a generalist species. If it was specialized, there would have been fewer differences among the different species of host bird.
+
+This study is limited in scope as it only concentrates on six host species, and the cuckoo bird itself has a global distribution. While this study was restricted to museum specimens, these findings continue to build onto the growing information on cuckoo birds and their behavioural and anatomical habits. Cuckoo birds can become a powerful indicator for avian biodiversity in the future (Haest, 2019). 
+
+## Conclusion
+
+The hypothesis is accepted. There is a clear distinction between the eggs laid by the cuckoo intended for different host species. There is also an observable difference in the incidences of colouration and the prevalence of egg laying among these six host species analyzed. Further research should be undertaken to determine the evolutionary adaptations that both the host species and the cuckoo have undergone, and to investigate the extent of egg morphology in other potential host species.
+
+\newpage
+# References
