@@ -97,6 +97,8 @@ cuckoo_boxplot_breadth <- ggplot(cuckoos, aes(x = fct_reorder(species, length, f
         plot.title = element_text(size=16, face="bold", hjust=0.5))
 cuckoo_boxplot_breadth
 
+boxplots <- ggarrange(cuckoo_boxplot_length, cuckoo_boxplot_breadth, common.legend = TRUE, legend = "top")
+
 #STATISTICAL ANALYSIS OF LENGTH
 #TWO-SIDED ANOVA
 #HYPOTHESIS
@@ -154,8 +156,8 @@ breadth_tk_bar <- ggplot(TKdatabreadth, aes(x = species, y = diff, fill = specie
                                               size = 2, linetype = "solid"))
 breadth_tk_bar
 
-ggarrange(length_tk_bar, breadth_tk_bar, common.legend = TRUE, legend = "top") #combined graph
-
+TK_full <- ggarrange(length_tk_bar, breadth_tk_bar, common.legend = TRUE, legend = "top") #combined graph
+TK_full
 #CORRELATION
 pearson_cuckoos <- cor.test(x = cuckoos$length, cuckoos$breadth)
 pearson_cuckoos #0.5 slightly strong
