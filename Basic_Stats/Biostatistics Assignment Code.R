@@ -71,7 +71,7 @@ cuckoos_stats
 cuckoo_boxplot_length <- ggplot(cuckoos, aes(x = fct_reorder(species, breadth, fun = median, .desc = TRUE), y = length)) + 
   geom_boxplot(aes(fill = fct_reorder(species, breadth, fun = median, .desc = TRUE))) + #reordered for efficency
   scale_fill_manual(values = brewer.pal(6, "Accent"), guide = guide_legend(title = "Species"), 
-                    labels = c("Hedge Sparrow", "Meadow Pipit", "Tree Pipit","Pied Wagtail", "Robin","Wren")) +
+                    labels = c("Hedge Sparrow", "Meadow Pipit", "Tree Pipit","Pied Wagtail", "Robin","Wren")) + #palette
   geom_jitter(position=position_jitter(0.2)) +
   labs(x = "Species", y = "Length (mm)", title = "Cuckoo Egg Length") +
   theme(axis.text.x = element_blank(), #custom theme
@@ -80,7 +80,7 @@ cuckoo_boxplot_length <- ggplot(cuckoos, aes(x = fct_reorder(species, breadth, f
         panel.background = element_rect(fill = "#ffffff", colour = "#C0C0C0",
                                         size = 2, linetype = "solid"),
         plot.title = element_text(size=16, face="bold", hjust=0.5))
-cuckoo_boxplot_length
+cuckoo_boxplot_length #displays graph
 
 #Boxplot for egg breadth
 cuckoo_boxplot_breadth <- ggplot(cuckoos, aes(x = fct_reorder(species, length, fun = median, .desc = TRUE), y = breadth)) + 
@@ -106,11 +106,11 @@ boxplots <- ggarrange(cuckoo_boxplot_length, cuckoo_boxplot_breadth, common.lege
 #H1: Species of host bird does have an effect on the length of cuckoo eggs
 
 cuckoo_anova_length <- aov(length ~ species, data = cuckoos)
-summary(cuckoo_anova_length)
+summary(cuckoo_anova_length) #summary of anova results
 #p is smaller than 0.05 which  means there is a significant difference
 #in order to determine where the difference a Tukey test is done
 
-TK_length <- TukeyHSD(cuckoo_anova_length)
+TK_length <- TukeyHSD(cuckoo_anova_length) #Tukey analysis
 
 #turning the results into a dataframe to be visually analyzed
 TK_length <- TukeyHSD(cuckoo_anova_length, "species", ordered = TRUE)
@@ -118,7 +118,7 @@ TKdatalength <- as.data.frame(TK_length$species, rownames = FALSE)
 TKdatalength <- cbind(species = rownames(TKdatalength), TKdatalength)
 rownames(TKdatalength) <- 1:nrow(TKdatalength) #making the index into a column
 
-length_tk_bar <- ggplot(TKdatalength, aes(x = species, y = diff, fill = species)) +
+length_tk_bar <- ggplot(TKdatalength, aes(x = species, y = diff, fill = species)) + #visual depiction of Tukey
   geom_bar(stat = "identity") +
   labs(x = "Species", y = "Difference in Length") +
   title("Tukey Analysis") +
@@ -156,10 +156,11 @@ breadth_tk_bar <- ggplot(TKdatabreadth, aes(x = species, y = diff, fill = specie
                                               size = 2, linetype = "solid"))
 breadth_tk_bar
 
-TK_full <- ggarrange(length_tk_bar, breadth_tk_bar, common.legend = TRUE, legend = "top") #combined graph
+TK_full <- ggarrange(length_tk_bar, breadth_tk_bar, common.legend = TRUE, legend = "top") #combined graph of Tukey analysis
 TK_full
+
 #CORRELATION
-pearson_cuckoos <- cor.test(x = cuckoos$length, cuckoos$breadth)
+pearson_cuckoos <- cor.test(x = cuckoos$length, cuckoos$breadth) #correlation test
 pearson_cuckoos #0.5 slightly strong
 
 r_print <- paste0("r = 0.5")
@@ -169,24 +170,24 @@ correlation_cuckoos <- ggplot(data = cuckoos, aes(x = length, y = breadth)) +
   geom_label(x = 20, y = 17.3, label = r_print) +
   labs(x = "Egg length (mm)", y = "Egg breadth (mm)") +
   theme_pubclean() 
-correlation_cuckoos 
+correlation_cuckoos #visual depiction of correlation 
 
 #CUCKOO EGG MATCHING
-cuckoohosts <- DAAG::cuckoohosts
+cuckoohosts <- DAAG::cuckoohosts #using dataframe from same study
 cuckoohosts <- cbind(species = rownames(cuckoohosts), cuckoohosts)
 rownames(cuckoohosts) <- 1:nrow(cuckoohosts)
 
 cuckoohosts <- cuckoohosts %>% 
-slice(1:6) #delete other rows
+slice(1:6) #delete other rows as they involve species not being discussed
 
-#CUCKOO HOST MATCHING #THIS NEEDS TO GO IN RMARKDOWN
+#CUCKOO HOST MATCHING 
 cuckoohosts1 <- cuckoohosts #making a dataframe for graph creation
 cuckoohosts1 <- cuckoohosts %>% 
-  select(1, 12, 13)
-bar_cuckoohosts <- melt(cuckoohosts1, id.vars='species')
+  select(1, 12, 13) 
+bar_cuckoohosts <- melt(cuckoohosts1, id.vars='species') #adjusting data to fit idealized bar graph
 
 ggplot(bar_cuckoohosts, aes(x = species, y = value, fill = variable)) +
-  geom_bar(stat = 'identity', position = 'dodge') + #needs to be prettier +
+  geom_bar(stat = 'identity', position = 'dodge') + #bar plot of variables
   scale_fill_manual(values = brewer.pal(2, "Accent"), guide = guide_legend(title = "Egg Matching"), 
                     labels = c("Match", "Not a Match")) +
   labs(x = "Species", y = "Amount of Eggs", title = "Matched Cuckoo Eggs") +
@@ -199,11 +200,11 @@ ggplot(bar_cuckoohosts, aes(x = species, y = value, fill = variable)) +
                                         size = 2, linetype = "solid"),
         plot.title = element_text(size = 16, face = "bold", hjust = 0.5))
 
-#EGG NUMBERS #THIS NEEDS TO GO IN RMARKDOWN PASTED
+#EGG NUMBERS 
 cuckoohosts2 <- cuckoohosts #making a dataframe for graph creation
 cuckooeggnumbers <- cuckoohosts2 %>% 
   select(1, 6, 11) %>% 
-  slice(1:5) #wren is deselected
+  slice(1:5) #wren is deselected as there is an 'na' value
 
 bar_cuckooeggs <- melt(cuckooeggnumbers, id.vars='species') 
 
@@ -220,3 +221,5 @@ ggplot(bar_cuckooeggs, aes(x = species, y = value, fill = variable)) +
         panel.background = element_rect(fill = "#ffffff", colour = "#C0C0C0",
                                         size = 2, linetype = "solid"),
         plot.title = element_text(size = 16, face = "bold", hjust = 0.5))
+
+### END ###

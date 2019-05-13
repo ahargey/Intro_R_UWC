@@ -4,17 +4,21 @@ subtitle: "3650393"
 author: "Ayesha Hargey"
 date: "May 13, 2019"
 output:
-  pdf_document: 
-    fig_caption: yes
+  pdf_document:  default
   html_document: default
   word_document: default
-header-includes: \usepackage{setspace}\linespread{2} #double spacing 
+header-includes: 
+  - \usepackage{setspace}\linespread{2} #double spacing
+  - \usepackage{float}
+  - \floatplacement{figure}{H} #keeps figures in their correct places
+  - \floatstyle{boxed} 
+  - \restylefloat{figure}
                  
                  
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r global_options, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(fig.pos = "H")
 ```
 
 ```{r libraries, warning=FALSE, include=FALSE}
@@ -31,7 +35,7 @@ library(DAAG)
 library(reshape2)
 cuckoos <- DAAG::cuckoos
 ```
-
+\newpage
 ## Introduction
 
 The common cuckoo (*Cuculus canorus*) is a charismatic passerine bird and the keystone example of brood parasites in animals. The mother bird lays mimicking eggs into nests of small songbirds, and thereafter, the cuckoo hatchling eliminates the breeding success of the host by evicting all other eggs and offspring from the nest (Moskát and Hauber, 2007). This host is then responsible for the parental care of these genetically unrelated young. Many of these host species have evolved defense mechanisms to prevent or reduce the likelihood of raising a parasitic egg such as through ejection or the desertion of brood (Moskát and Hauber, 2007). This then selects for improved egg mimicry by the cuckoo (Marchetti, 2000). 
@@ -53,16 +57,11 @@ The bird species used were the meadow pipit (*Anthus pratensis*), the tree pipit
 
 The greatest length and greatest breadth of the eggs were measured by using sliding callipers reading to millimeters. Statistical analysis was done in R (R Core Team, 2018). An ANOVA was done to determine the relationship between the length of eggs and the host species, as well as between the breadth of eggs and the host species. A pearson correlation was done to determine if any relationship existed between egg length and breadth as well. 
 
-
-\newpage
 ## Results
 
-There is a clear visual distinction between cuckoo egg dimensions and the species of host parent. Figure 1 and 2 clearly demonstrate this, with eggs being cared for by wren species being noticably smaller than the other host-parents. 
+There is a clear visual distinction between cuckoo egg dimensions and the species of host parent. The figure below clearly demonstrates this, with eggs being cared for by wren species being noticably smaller than the other host-parents. 
 
-```{r cuckoo egg length boxplot, echo=FALSE}
-```
-
-```{r cuckoo egg breadth boxplot, echo=FALSE, fig.cap=paste("Diagram of cuckoo egg length and breadth corresponding to species of host-parent"), fig.width = 12, fig.height = 4}
+```{r cuckoo egg code, include=FALSE}
 cuckoo_boxplot_length <- ggplot(cuckoos, aes(x = fct_reorder(species, breadth, fun = median, .desc = TRUE), y = length)) + 
   geom_boxplot(aes(fill = fct_reorder(species, breadth, fun = median, .desc = TRUE))) + #reordered for efficency
   scale_fill_manual(values = brewer.pal(6, "Accent"), guide = guide_legend(title = "Species"), 
@@ -75,7 +74,6 @@ cuckoo_boxplot_length <- ggplot(cuckoos, aes(x = fct_reorder(species, breadth, f
         panel.background = element_rect(fill = "#ffffff", colour = "#C0C0C0",
                                         size = 2, linetype = "solid"),
         plot.title = element_text(size=16, face="bold", hjust=0.5))
-cuckoo_boxplot_length
 
 cuckoo_boxplot_breadth <- ggplot(cuckoos, aes(x = fct_reorder(species, length, fun = median, .desc = TRUE), y = breadth)) + 
   geom_boxplot(aes(fill = fct_reorder(species, length, fun = median, .desc = TRUE))) + 
@@ -90,15 +88,19 @@ cuckoo_boxplot_breadth <- ggplot(cuckoos, aes(x = fct_reorder(species, length, f
                                         size = 2, linetype = "solid"),
         plot.title = element_text(size=16, face="bold", hjust=0.5))
 
+```
+
+```{r cuckoo egg breadth boxplot, echo=FALSE, fig.width = 12, fig.height = 4, fig.cap=paste("Diagram of cuckoo egg length and breadth corresponding to species of host-parent")}
 boxplots <- ggarrange(cuckoo_boxplot_length, cuckoo_boxplot_breadth, common.legend = TRUE, legend = "top")
 boxplots
 ```
-The largest variation in size occurs in the Meadow Pipit, with the other host-parent species have a relatively proportional size.
+*Diagram of cuckoo egg length and breadth corresponding to species of host-parent*
+
+The largest variation in size occurs in the Meadow Pipit, while the other host-parent species have a relatively proportional size.
 
 Using R, a two-sided ANOVA was conducted between the cuckoo egg the species of host-parent. It was found that there is a significant difference in the relationship between the species of host-parent and the cuckoo egg length *(P < 0.00000002, df = 5)*. Furthermore, there is a significant difference between the species of host-parent and cuckoo egg breadth *(P < 0.00000001, df = 5)*. This was further refined through the use of a Tukey analysis, the results of which are displayed in Figure X.  
 
-
-```{r anova, fig.width = 12, fig.height = 4, echo=FALSE, fig.cap=paste("Tukey Analysis of Egg Length and Egg Breadth")}
+```{r set up, include=FALSE}
 cuckoo_anova_length <- aov(length ~ species, data = cuckoos)
 TK_length <- TukeyHSD(cuckoo_anova_length)
 #turning the results into a dataframe to be visually analyzed
@@ -132,12 +134,15 @@ breadth_tk_bar <- ggplot(TKdatabreadth, aes(x = species, y = diff, fill = specie
               plot.background = element_rect(fill = "#f0eae8"),
               panel.background = element_rect(fill = "#ffffff", colour = "#C0C0C0",
                                               size = 2, linetype = "solid"))
+```
+
+```{r anova, fig.width = 12, fig.height = 4, echo=FALSE, fig.cap=paste("Tukey Analysis of Egg Length and Egg Breadth")}
 TK_full <- ggarrange(length_tk_bar, breadth_tk_bar, common.legend = TRUE, legend = "top")
 TK_full
 #combined graph
-
 ```
-The largest difference occurs betwwen the Hedge Sparrow and Wren for both length *(diff = -1.99, p adj = 0.0000005)* and breadth *(diff = 0.93, p adj = 0.0000012)*. There is a greater difference in length. The Pied Wagtail and Wren have a similarly high difference, with a larger gap in breadth *(diff = 0.67, p adj = 0.0007)* than length *(diff = -1.76, p adj = 0.0000069)*. There is minimal difference among the bigger birds, with the largest in the egg breadth between the Tree Pipit and the Meadow Pipit *(diff = 0.073, p adj = 0.99)*. In particular, there is a far greater significance in length than of breadth. Egg morphology in cuckoo birds is highly variable. 
+
+The largest difference occurs between the Hedge Sparrow and Wren for both length *(diff = -1.99, p adj = 0.0000005)* and breadth *(diff = 0.93, p adj = 0.0000012)*. There is a greater difference in length. The Pied Wagtail and Wren have a similarly high difference, with a larger gap in breadth *(diff = 0.67, p adj = 0.0007)* than length *(diff = -1.76, p adj = 0.0000069)*. There is minimal difference among the bigger birds, with the largest in the egg breadth between the Tree Pipit and the Meadow Pipit *(diff = 0.073, p adj = 0.99)*. In particular, there is a far greater significance in length than of breadth. Egg morphology in cuckoo birds is highly variable. 
 
 ```{r correlation, echo=FALSE, fig.cap=paste("Pearson's correlation of egg length to egg breadth (r = 0.5)")}
 pearson_cuckoos <- cor.test(x = cuckoos$length, cuckoos$breadth)
@@ -216,3 +221,5 @@ Due to experimental flaws, no wren data was collected for this particular observ
 ## Discussion
 
 
+
+A possible explanation of the observations in Figure 4 regarding the frequency of host eggs in comparision to cuckoo eggs could be the idea of hiding these eggs. Only certain species of bird are able to discriminate parasitized eggs by observation (Hauber, Sherman and Paprika, 2000). Egg matching by colour is also found to be highly variable. Colourmatching is an exhaustive activity and could be ultimately unnecessary.    
